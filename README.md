@@ -1,6 +1,8 @@
 # Holystening — Prayer App
 
 An iOS app for focused prayer sessions. Tap to start, it plays ambient prayer audio, silences your notifications via iOS Focus Mode, and dims the screen so nothing pulls you away.
+<img width="503" height="471" alt="image" src="https://github.com/user-attachments/assets/f220d47d-45f9-4d01-8c09-56884cfa519a" />
+
 
 ---
 
