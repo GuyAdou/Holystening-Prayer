@@ -46,9 +46,41 @@ enum AppConfig {
     /// After waking from idle, a tap anywhere on the background re-dims immediately.
     static let tapBackgroundToDimAfterWake: Bool = true
 
+    // MARK: - Onboarding
+    enum Onboarding {
+        // Screen 1
+        static let s1Headline  = "Welcome to Holystening"
+        static let s1Body      = "The distraction-free prayer app"
+        static let s1CTA       = "Get started"
+
+        // Screen 2
+        static let s2Headline  = "Block everything out."
+        static let s2Body      = "To allow Holystening to silence all notifications, grant it access to a Focus mode to turn on while you pray: "
+        static let s2CTAOpen   = "Open Settings"
+        static let s2CTA       = "Done"
+        static let s2Step1Desc = "Open the Settings app, then tap Focus."
+        static let s2Step2Desc = "Tap any Focus you'd like to use"
+        static let s2Step3Desc = "Tap Add Schedule."
+        static let s2Step4Desc = "Tap App, then select Holystening."
+
+        // Screen 3
+        static let s3Headline  = "Congratulations."
+        static let s3Body      = "Your prayer time is now protected."
+        static let s3CTA       = "Start first Prayer"
+
+        // Fonts
+        static let wordmarkSize:    CGFloat = 11
+        static let headlineSize:    CGFloat = 30
+        static let bodySize:        CGFloat = 17
+        static let stepTitleSize:   CGFloat = 20
+        static let stepChipSize:    CGFloat = 11.5
+        static let stepNoteSize:    CGFloat = 15
+        static let ctaSize:         CGFloat = 17
+    }
+
     // MARK: - Animations
     /// Duration of the background gradient transition when a session starts/stops.
-    static let backgroundTransitionDuration: TimeInterval = 1.0
+    static let backgroundTransitionDuration: TimeInterval = 0.0
 
     /// Duration of the pulsing ring animation on the play button.
     static let pulseRingDuration: TimeInterval = 1.4

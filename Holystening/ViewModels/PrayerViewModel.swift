@@ -5,6 +5,7 @@ import UIKit
 @MainActor
 class PrayerViewModel: ObservableObject {
     @Published var isSessionActive = false
+    @Published var isPaused = false
     @Published var settings = AppSettings()
     @Published var isLooping: Bool = AppConfig.defaultLoopEnabled
 
@@ -14,6 +15,9 @@ class PrayerViewModel: ObservableObject {
     init() {
         audio.onPlaybackFinished = { [weak self] in
             self?.handlePlaybackFinished()
+        }
+        audio.onStopRequested = { [weak self] in
+            self?.stopSession()
         }
     }
 
@@ -33,30 +37,44 @@ class PrayerViewModel: ObservableObject {
         isSessionActive = true
     }
 
-    func toggleLoop() {
-        isLooping.toggle()
-        audio.setLooping(isLooping)
+    func pauseSession() {
+        isPaused = true
+        audio.pause()
+    }
+
+    func resumeSession() {
+        isPaused = false
+        audio.resume()
     }
 
     func stopSession() {
+        isPaused = false
         audio.stop()
         focus.disable()
         UIApplication.shared.isIdleTimerDisabled = false
         isSessionActive = false
     }
 
-    func toggleSession() {
-        if isSessionActive {
-            stopSession()
-        } else {
+    func togglePlayPause() {
+        if !isSessionActive {
             startSession()
+        } else if audio.isPaused {
+            resumeSession()
+        } else {
+            pauseSession()
         }
+    }
+
+    func toggleLoop() {
+        isLooping.toggle()
+        audio.setLooping(isLooping)
     }
 
     // MARK: - Private
 
     private func handlePlaybackFinished() {
         focus.disable()
+        UIApplication.shared.isIdleTimerDisabled = false
         isSessionActive = false
     }
 }
