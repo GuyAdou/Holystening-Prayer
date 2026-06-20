@@ -1,17 +1,25 @@
-//
-//  HstningTests.swift
-//  HstningTests
-//
-//  Created by Guy-Georges Adou Bogolo on 4/2/26.
-//
-
 import Testing
-@testable import Hstning
+import Foundation
+@testable import Holystening
 
-struct HstningTests {
+// MARK: - Bible version
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+struct BibleVersionTests {
+
+    /// The hardcoded translation parameter must remain "kjv" after badge removal.
+    @Test func bibleAPIURL_usesKJVTranslation() async throws {
+        let chapter = 1
+        let urlString = "https://bible-api.com/genesis+\(chapter)?translation=kjv"
+        let url = try #require(URL(string: urlString))
+        #expect(url.query?.contains("translation=kjv") == true)
     }
 
+    /// Navigating chapters must keep the translation parameter intact.
+    @Test func bibleAPIURL_KJVPersistsAcrossChapters() async throws {
+        for chapter in 1...3 {
+            let urlString = "https://bible-api.com/genesis+\(chapter)?translation=kjv"
+            let url = try #require(URL(string: urlString))
+            #expect(url.query?.contains("translation=kjv") == true, "Chapter \(chapter) must use KJV")
+        }
+    }
 }

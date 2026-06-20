@@ -28,30 +28,7 @@ struct SettingsView: View {
                     Text("Prayer Audio")
                 }
 
-                // Focus mode picker
-                Section {
-                    ForEach(AppSettings.availableFocusModes, id: \.self) { mode in
-                        HStack {
-                            Image(systemName: iconForFocus(mode))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 24)
-                            Text(mode)
-                            Spacer()
-                            if settings.selectedFocusName == mode {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.accentColor)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            settings.selectedFocusName = mode
-                        }
-                    }
-                } header: {
-                    Text("Focus Mode")
-                }
-
-                Section("Interruptions") {
+Section("Interruptions") {
                     Button {
                         showFixInterruptions = true
                     } label: {
@@ -73,14 +50,4 @@ struct SettingsView: View {
         }
     }
 
-    private func iconForFocus(_ mode: String) -> String {
-        switch mode {
-        case "Do Not Disturb": return "moon.fill"
-        case "Sleep":           return "bed.double.fill"
-        case "Personal":        return "person.fill"
-        case "Work":            return "briefcase.fill"
-        case "Driving":         return "car.fill"
-        default:                return "moon.stars.fill"
-        }
-    }
 }

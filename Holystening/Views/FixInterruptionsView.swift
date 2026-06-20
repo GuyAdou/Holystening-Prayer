@@ -20,12 +20,14 @@ struct FixInterruptionsView: View {
                         .font(.system(size: AppConfig.Onboarding.headlineSize, weight: .light))
                         .foregroundStyle(Color(hex: "1a1a2e"))
                         .tracking(-0.4)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.bottom, 12)
 
                     Text(AppConfig.Onboarding.s2Body)
                         .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
                         .foregroundStyle(Color(hex: "1a1a2e").opacity(0.56))
                         .lineSpacing(8)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.bottom, 40)
 
                     VStack(alignment: .leading, spacing: 0) {
@@ -41,11 +43,13 @@ struct FixInterruptionsView: View {
                                     Text(step.title)
                                         .font(.system(size: AppConfig.Onboarding.stepTitleSize, weight: .medium))
                                         .foregroundStyle(Color(hex: "1a1a2e"))
+                                        .fixedSize(horizontal: false, vertical: true)
 
                                     Text(step.desc)
                                         .font(.system(size: AppConfig.Onboarding.stepNoteSize, weight: .regular))
                                         .foregroundStyle(Color(hex: "1a1a2e").opacity(0.72))
                                         .lineSpacing(3)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
                                 .padding(.top, 4)
                             }
@@ -59,39 +63,36 @@ struct FixInterruptionsView: View {
                             }
                         }
                     }
-                    .padding(.bottom, 40)
-
-                    Button {
-                        if hasOpenedSettings {
-                            dismiss()
-                        } else {
-                            hasOpenedSettings = true
-                            openURL(URL(string: "App-prefs:")!)
-                        }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Text(hasOpenedSettings ? "Done" : "Open Settings")
-                            Text("→").font(.system(size: 18))
-                        }
-                        .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
-                        .foregroundStyle(Color(hex: "1a1a2e"))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "a8edea"), Color(hex: "fed6e3")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            in: Capsule()
-                        )
-                    }
-                    .buttonStyle(OnboardingCTAButtonStyle())
                 }
                 .fontDesign(.serif)
                 .padding(.horizontal, 28)
                 .padding(.top, 28)
                 .padding(.bottom, 16)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Button {
+                    if hasOpenedSettings {
+                        dismiss()
+                    } else {
+                        hasOpenedSettings = true
+                        openURL(URL(string: "App-prefs:")!)
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(hasOpenedSettings ? "Done" : "Open Settings")
+                        Text("→").font(.system(size: 18))
+                    }
+                    .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
+                    .foregroundStyle(Color(hex: "1a1a2e"))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(AppColors.ctaButton, in: Capsule())
+                }
+                .buttonStyle(OnboardingCTAButtonStyle())
+                .padding(.horizontal, 28)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
+                .background(Color.white)
             }
             .background(Color.white.ignoresSafeArea())
             .navigationTitle("Fix Interruptions")

@@ -51,7 +51,7 @@ enum AppConfig {
         // Screen 1
         static let s1Headline  = "Welcome to Holystening"
         static let s1Body      = "The distraction-free prayer app"
-        static let s1CTA       = "Get started"
+        static let s1CTA       = "Continue"
 
         // Screen 2
         static let s2Headline  = "Block everything out."
@@ -65,8 +65,8 @@ enum AppConfig {
 
         // Screen 3
         static let s3Headline  = "Congratulations."
-        static let s3Body      = "Your prayer time is now protected."
-        static let s3CTA       = "Start first Prayer"
+        static let s3Body      = "You can start your first distraction free prayer with instrumental music"
+        static let s3CTA       = "Start"
 
         // Fonts
         static let wordmarkSize:    CGFloat = 11
@@ -75,7 +75,9 @@ enum AppConfig {
         static let stepTitleSize:   CGFloat = 20
         static let stepChipSize:    CGFloat = 11.5
         static let stepNoteSize:    CGFloat = 15
-        static let ctaSize:         CGFloat = 17
+        static let ctaSize:             CGFloat = 18
+        static let featureRowTitleSize: CGFloat = 17
+        static let featureRowBodySize:  CGFloat = 16
     }
 
     // MARK: - Animations
