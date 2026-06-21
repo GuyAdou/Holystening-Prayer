@@ -82,7 +82,9 @@ struct OnboardingSilenceView: View {
                         onContinue()
                     } else {
                         hasOpenedSettings = true
-                        openURL(URL(string: "App-prefs:")!)
+                        if !CommandLine.arguments.contains("-UITesting") {
+                            openURL(URL(string: "App-prefs:")!)
+                        }
                     }
                 } label: {
                     HStack(spacing: 6) {

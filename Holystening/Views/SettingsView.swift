@@ -48,7 +48,7 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Focus Mode")
+                    Text("Apple Focus")
                 }
 
                 Section("Interruptions") {

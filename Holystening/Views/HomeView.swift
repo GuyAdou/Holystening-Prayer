@@ -5,6 +5,7 @@ struct HomeView: View {
     @StateObject private var vm = PrayerViewModel()
     @AppStorage("autoStartSession") private var autoStartSession = false
     @State private var showSettings = false
+    @State private var showBible = false
     @State private var showNotes = false
     @State private var showTransition = false
     @State private var pulseAnimation = false
@@ -95,6 +96,7 @@ struct HomeView: View {
                                     .offset(x: (!vm.isSessionActive || vm.isPaused) ? 4 : 0)
                             }
                         }
+                        .accessibilityIdentifier("prayer-play-button")
                         .animation(.spring(duration: 0.5, bounce: 0.3), value: vm.isSessionActive)
                         .onChange(of: vm.isSessionActive) { _, active in
                             pulseAnimation = false
@@ -227,14 +229,13 @@ struct HomeView: View {
                             .background(.ultraThinMaterial, in: Capsule())
                             .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
                         }
+                        .accessibilityIdentifier("notes-pill-button")
                         .padding(.leading, 20)
                         .padding(.bottom, 32)
 
                         Spacer()
 
-                        Button {
-                            // Bible functionality coming soon
-                        } label: {
+                        Button { showBible = true } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: "book.fill")
                                     .font(.system(size: 15, weight: .medium))
@@ -247,6 +248,7 @@ struct HomeView: View {
                             .background(.ultraThinMaterial, in: Capsule())
                             .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
                         }
+                        .accessibilityIdentifier("bible-pill-button")
                         .padding(.trailing, 20)
                         .padding(.bottom, 32)
                     }
@@ -263,10 +265,14 @@ struct HomeView: View {
                         Image(systemName: "gearshape")
                             .foregroundStyle(vm.isSessionActive ? .white.opacity(0.7) : Color(hex: "1a1a2e").opacity(0.7))
                     }
+                    .accessibilityIdentifier("settings-gear-button")
                 }
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView(settings: $vm.settings)
+            }
+            .sheet(isPresented: $showBible) {
+                BibleView()
             }
             .sheet(isPresented: $showNotes) {
                 NotesView()
@@ -327,19 +333,5 @@ struct HomeView: View {
         idleTimer?.invalidate()
         idleTimer = nil
         withAnimation { isIdle = false }
-    }
-}
-
-// MARK: - Color hex helper
-
-extension Color {
-    init(hex: String) {
-        let scanner = Scanner(string: hex)
-        var rgb: UInt64 = 0
-        scanner.scanHexInt64(&rgb)
-        let r = Double((rgb >> 16) & 0xFF) / 255
-        let g = Double((rgb >> 8) & 0xFF) / 255
-        let b = Double(rgb & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
     }
 }

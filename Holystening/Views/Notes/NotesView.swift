@@ -3,6 +3,7 @@ import SwiftData
 
 struct NotesView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
 
     @State private var path: [Note] = []
@@ -39,10 +40,15 @@ struct NotesView: View {
                 NoteEditorView(note: note)
             }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Close") { dismiss() }
+                        .accessibilityIdentifier("notes-close-button")
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: addNote) {
                         Image(systemName: "square.and.pencil")
                     }
+                    .accessibilityIdentifier("notes-new-button")
                 }
             }
         }

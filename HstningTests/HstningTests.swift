@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import Hstning
+@testable import Holystening
 
 struct HstningTests {
 
