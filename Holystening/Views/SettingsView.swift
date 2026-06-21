@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @Binding var settings: AppSettings
     @Environment(\.dismiss) private var dismiss
+    @State private var showFixInterruptions = false
 
     var body: some View {
         NavigationStack {
@@ -25,8 +26,6 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Prayer Audio")
-                } footer: {
-                    Text("Add MP3 files to the Xcode bundle and register them in AppSettings.availableTracks.")
                 }
 
                 // Focus mode picker
@@ -49,27 +48,20 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Focus Mode")
-                } footer: {
-                    Text("The selected Focus will activate when prayer begins and deactivate when it ends.\n\nTip: In Shortcuts, create an automation named \"Prayer Focus enable\" that turns on this Focus, so the app can trigger it silently.")
+                    Text("Apple Focus")
                 }
 
-                // How it works
-                Section("Focus Setup") {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("Open Settings → Focus → Do Not Disturb", systemImage: "1.circle.fill")
-                        Label("Tap Apps → Add App → select this app", systemImage: "2.circle.fill")
-                        Label("Tap Add Schedule → set your prayer time", systemImage: "3.circle.fill")
-                        Label("iOS will silence notifications automatically", systemImage: "4.circle.fill")
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 4)
-
-                    Link(destination: URL(string: "App-prefs:FOCUS")!) {
-                        Label("Open Focus Settings", systemImage: "arrow.up.right.square")
+                Section("Interruptions") {
+                    Button {
+                        showFixInterruptions = true
+                    } label: {
+                        Label("Fix interruptions", systemImage: "bell.slash.fill")
+                            .foregroundStyle(.primary)
                     }
                 }
+            }
+            .sheet(isPresented: $showFixInterruptions) {
+                FixInterruptionsView()
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

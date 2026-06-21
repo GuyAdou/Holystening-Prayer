@@ -27,6 +27,7 @@ struct PrayerFocusFilter: SetFocusFilterIntent {
     }
 
     func perform() async throws -> some IntentResult {
+        UserDefaults.standard.set(true, forKey: "focusConnected")
         return .result()
     }
 }
