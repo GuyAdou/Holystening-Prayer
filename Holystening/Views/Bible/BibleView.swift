@@ -36,7 +36,7 @@ struct BibleView: View {
 
                                     Text(verse.text)
                                         .font(.system(size: 17, design: .serif))
-                                        .foregroundStyle(Color(hex: "1a1a2e"))
+                                        .foregroundStyle(.primary)
                                         .lineSpacing(6)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -47,7 +47,7 @@ struct BibleView: View {
 
                         Text("King James Version")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundStyle(AppColors.navy.opacity(0.35))
+                            .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.bottom, 24)
                             .accessibilityIdentifier("bible-version-note")

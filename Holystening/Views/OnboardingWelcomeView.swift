@@ -23,7 +23,7 @@ struct OnboardingWelcomeView: View {
 
     var body: some View {
         ZStack {
-            Color.white.ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
@@ -41,12 +41,12 @@ struct OnboardingWelcomeView: View {
                 VStack(spacing: 12) {
                     Text(AppConfig.Onboarding.s1Headline)
                         .font(.system(size: AppConfig.Onboarding.headlineSize, weight: .semibold))
-                        .foregroundStyle(Color(hex: "1a1a2e"))
+                        .foregroundStyle(Color.primary)
                         .multilineTextAlignment(.center)
 
                     Text(AppConfig.Onboarding.s1Body)
                         .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                        .foregroundStyle(Color(hex: "1a1a2e").opacity(0.56))
+                        .foregroundStyle(Color.primary.opacity(0.56))
                         .multilineTextAlignment(.center)
                         .lineSpacing(5)
                 }
@@ -71,11 +71,11 @@ struct OnboardingWelcomeView: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(feature.title)
                                     .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(Color(hex: "1a1a2e"))
+                                    .foregroundStyle(Color.primary)
 
                                 Text(feature.body)
                                     .font(.system(size: 14, weight: .regular))
-                                    .foregroundStyle(Color(hex: "1a1a2e").opacity(0.56))
+                                    .foregroundStyle(Color.primary.opacity(0.56))
                                     .lineSpacing(3)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -90,7 +90,7 @@ struct OnboardingWelcomeView: View {
                 HStack(spacing: 6) {
                     ForEach(0..<3) { i in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(i == 0 ? Color(hex: "1a1a2e") : Color(hex: "1a1a2e").opacity(0.15))
+                            .fill(i == 0 ? Color.primary : Color.primary.opacity(0.15))
                             .frame(width: i == 0 ? 24 : 4, height: 4)
                     }
                 }
@@ -103,7 +103,7 @@ struct OnboardingWelcomeView: View {
                         Text("→").font(.system(size: 18))
                     }
                     .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
-                    .foregroundStyle(Color(hex: "1a1a2e"))
+                    .foregroundStyle(AppColors.navy)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(

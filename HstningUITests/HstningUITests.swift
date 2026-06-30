@@ -282,6 +282,39 @@ final class HstningUITests: XCTestCase {
         XCTAssertTrue(startCTA.isHittable)
     }
 
+    // MARK: - Dark mode
+
+    @MainActor
+    func testBible_contentVisibleInDarkMode() throws {
+        XCUIDevice.shared.appearance = .dark
+        defer { XCUIDevice.shared.appearance = .unspecified }
+        let app = launchApp()
+        app.buttons["bible-pill-button"].tap()
+        XCTAssertTrue(app.staticTexts["Genesis 1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["bible-version-note"].waitForExistence(timeout: 8))
+    }
+
+    @MainActor
+    func testHome_pillsHittableInDarkMode() throws {
+        XCUIDevice.shared.appearance = .dark
+        defer { XCUIDevice.shared.appearance = .unspecified }
+        let app = launchApp()
+        XCTAssertTrue(app.buttons["bible-pill-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["bible-pill-button"].isHittable)
+        XCTAssertTrue(app.buttons["notes-pill-button"].isHittable)
+        XCTAssertTrue(app.buttons["prayer-play-button"].isHittable)
+    }
+
+    @MainActor
+    func testOnboarding_ctaHittableInDarkMode() throws {
+        XCUIDevice.shared.appearance = .dark
+        defer { XCUIDevice.shared.appearance = .unspecified }
+        let app = launchOnboarding()
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        XCTAssertTrue(cta.waitForExistence(timeout: 3))
+        XCTAssertTrue(cta.isHittable)
+    }
+
     // MARK: - Launch performance
 
     @MainActor
