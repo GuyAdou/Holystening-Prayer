@@ -26,7 +26,7 @@ struct HomeView: View {
                             endPoint: .bottomTrailing
                         )
                     } else {
-                        Color.white
+                        Color(.systemBackground)
                     }
                 }
                 .ignoresSafeArea()
@@ -47,7 +47,7 @@ struct HomeView: View {
                     // Title
                     Text("Prayer")
                         .font(.system(size: 42, weight: .thin, design: .serif))
-                        .foregroundStyle(vm.isSessionActive ? .white : Color(hex: "1a1a2e"))
+                        .foregroundStyle(vm.isSessionActive ? .white : .primary)
 
                     // Play / Pause button + Stop button
                     Button(action: vm.togglePlayPause) {
@@ -92,7 +92,7 @@ struct HomeView: View {
 
                                 Image(systemName: icon)
                                     .font(.system(size: 40, weight: .medium))
-                                    .foregroundStyle(Color(hex: "1a1a2e"))
+                                    .foregroundStyle(vm.isSessionActive ? Color(hex: "1a1a2e") : .primary)
                                     .offset(x: (!vm.isSessionActive || vm.isPaused) ? 4 : 0)
                             }
                         }
@@ -157,7 +157,7 @@ struct HomeView: View {
                                 .foregroundStyle(
                                     vm.isLooping
                                         ? Color(hex: "a8edea")
-                                        : (vm.isSessionActive ? .white.opacity(0.35) : Color(hex: "1a1a2e").opacity(0.35))
+                                        : (vm.isSessionActive ? .white.opacity(0.35) : .primary.opacity(0.35))
                                 )
                                 .padding(10)
                                 .background(
@@ -223,7 +223,7 @@ struct HomeView: View {
                                 Text("Notes")
                                     .font(.system(size: 14, weight: .medium))
                             }
-                            .foregroundStyle(vm.isSessionActive ? .white : Color(hex: "1a1a2e"))
+                            .foregroundStyle(vm.isSessionActive ? .white : .primary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(.ultraThinMaterial, in: Capsule())
@@ -242,7 +242,7 @@ struct HomeView: View {
                                 Text("Bible")
                                     .font(.system(size: 14, weight: .medium))
                             }
-                            .foregroundStyle(vm.isSessionActive ? .white : Color(hex: "1a1a2e"))
+                            .foregroundStyle(vm.isSessionActive ? .white : .primary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(.ultraThinMaterial, in: Capsule())
@@ -263,7 +263,7 @@ struct HomeView: View {
                         showSettings = true
                     } label: {
                         Image(systemName: "gearshape")
-                            .foregroundStyle(vm.isSessionActive ? .white.opacity(0.7) : Color(hex: "1a1a2e").opacity(0.7))
+                            .foregroundStyle(vm.isSessionActive ? .white.opacity(0.7) : .primary.opacity(0.7))
                     }
                     .accessibilityIdentifier("settings-gear-button")
                 }

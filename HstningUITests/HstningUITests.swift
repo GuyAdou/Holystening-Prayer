@@ -1,17 +1,55 @@
 import XCTest
 
-final class HstningUITests: XCTestCase {
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Base test case
+//
+// All UI test classes inherit from AppUITestCase.
+// - Shared launch helpers so they never need to be rewritten per feature.
+// - AID namespace: every accessibility identifier lives here. When an ID
+//   changes in the app, update it once here and every test stays correct.
+// - Flow helpers: openBible, openNotes, startSession, etc. are the building
+//   blocks for writing new feature tests without repeating boilerplate.
+//
+// To add tests for a new feature:
+//   1. Create a new `final class MyFeatureUITests: AppUITestCase` below.
+//   2. Write `@MainActor func test…` methods using the helpers.
+//   3. Add any new accessibility identifiers to AID.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class AppUITestCase: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
     }
 
-    override func tearDownWithError() throws {}
+    // MARK: Accessibility identifiers — single source of truth
 
-    // MARK: - Helpers
+    enum AID {
+        // Home
+        static let playButton     = "prayer-play-button"
+        static let settingsGear   = "settings-gear-button"
+        // Pills
+        static let biblePill      = "bible-pill-button"
+        static let notesPill      = "notes-pill-button"
+        // Bible
+        static let bibleClose     = "bible-close-button"
+        static let biblePrev      = "bible-prev-chapter"
+        static let bibleNext      = "bible-next-chapter"
+        static let bibleVersion   = "bible-version-note"
+        // Notes list
+        static let notesClose     = "notes-close-button"
+        static let notesNew       = "notes-new-button"
+        // Note editor
+        static let noteTitleField = "note-title-field"
+        static let noteBody       = "note-body-editor"
+        static let noteDone       = "note-done-button"
+    }
+
+    // MARK: Launch helpers
 
     @MainActor
-    private func launchApp(onboardingComplete: Bool = true) -> XCUIApplication {
+    func launchApp(onboardingComplete: Bool = true, darkMode: Bool = false) -> XCUIApplication {
+        if darkMode { XCUIDevice.shared.appearance = .dark }
         let app = XCUIApplication()
         app.launchArguments += ["-UITesting", "-hasCompletedOnboarding", onboardingComplete ? "1" : "0"]
         app.launch()
@@ -19,220 +57,331 @@ final class HstningUITests: XCTestCase {
     }
 
     @MainActor
-    private func launchOnboarding() -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments += ["-UITesting", "-hasCompletedOnboarding", "0"]
-        app.launch()
+    func launchOnboarding(darkMode: Bool = false) -> XCUIApplication {
+        launchApp(onboardingComplete: false, darkMode: darkMode)
+    }
+
+    // MARK: Flow helpers
+
+    /// Taps the play button and waits for the Stop button to confirm the session started.
+    @MainActor
+    @discardableResult
+    func startSession(in app: XCUIApplication) -> XCUIApplication {
+        XCTAssertTrue(app.buttons[AID.playButton].waitForExistence(timeout: 3))
+        app.buttons[AID.playButton].tap()
+        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch
+            .waitForExistence(timeout: 5)
         return app
     }
 
+    /// Opens the Bible sheet and waits for Genesis 1 to confirm the content loaded.
     @MainActor
-    private func openNotes(in app: XCUIApplication) {
-        app.buttons["notes-pill-button"].tap()
+    func openBible(in app: XCUIApplication) {
+        XCTAssertTrue(app.buttons[AID.biblePill].waitForExistence(timeout: 3))
+        app.buttons[AID.biblePill].tap()
+        _ = app.staticTexts["Genesis 1"].waitForExistence(timeout: 5)
     }
 
-    // MARK: - Bible: toolbar + content
+    /// Opens the Notes sheet and waits for the Notes navigation bar to appear.
+    @MainActor
+    func openNotes(in app: XCUIApplication) {
+        XCTAssertTrue(app.buttons[AID.notesPill].waitForExistence(timeout: 3))
+        app.buttons[AID.notesPill].tap()
+        _ = app.navigationBars["Notes"].waitForExistence(timeout: 3)
+    }
+
+    /// Opens Settings and waits for the Settings navigation bar.
+    @MainActor
+    func openSettings(in app: XCUIApplication) {
+        XCTAssertTrue(app.buttons[AID.settingsGear].waitForExistence(timeout: 3))
+        app.buttons[AID.settingsGear].tap()
+        _ = app.navigationBars["Settings"].waitForExistence(timeout: 3)
+    }
+
+    /// Taps the "Get started" CTA on the Welcome onboarding screen.
+    @MainActor
+    func advanceOnboarding(in app: XCUIApplication) {
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        XCTAssertTrue(cta.waitForExistence(timeout: 3))
+        cta.tap()
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Home & Prayer Session
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class HomeUITests: AppUITestCase {
 
     @MainActor
-    func testBibleToolbar_noKJVBadge() throws {
+    func testApp_launchesToHomeScreen() throws {
         let app = launchApp()
-        app.buttons["bible-pill-button"].tap()
-        _ = app.navigationBars.firstMatch.waitForExistence(timeout: 3)
-        XCTAssertFalse(app.navigationBars.buttons["KJV"].exists)
+        XCTAssertTrue(app.buttons[AID.playButton].waitForExistence(timeout: 5))
     }
 
     @MainActor
-    func testBibleContent_versionNoteExists() throws {
+    func testHome_playButtonStartsSession() throws {
         let app = launchApp()
-        app.buttons["bible-pill-button"].tap()
-        XCTAssertTrue(app.staticTexts["bible-version-note"].waitForExistence(timeout: 5))
+        app.buttons[AID.playButton].tap()
+        XCTAssertTrue(
+            app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch
+                .waitForExistence(timeout: 5),
+            "Stop button must appear once session starts"
+        )
     }
 
     @MainActor
-    func testBibleContent_versionNoteIsNotInteractive() throws {
+    func testHome_stopButtonEndsSession() throws {
         let app = launchApp()
-        app.buttons["bible-pill-button"].tap()
-        XCTAssertTrue(app.staticTexts["bible-version-note"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["bible-version-note"].exists)
+        startSession(in: app)
+        app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch.tap()
+        XCTAssertTrue(app.buttons[AID.playButton].waitForExistence(timeout: 5))
     }
 
     @MainActor
-    func testBibleContent_versionNotePersistsAcrossChapters() throws {
+    func testHome_settingsGearOpensSettings() throws {
         let app = launchApp()
-        app.buttons["bible-pill-button"].tap()
-        _ = app.staticTexts["bible-version-note"].waitForExistence(timeout: 5)
-        app.buttons["bible-next-chapter"].tap()
-        _ = app.staticTexts["Chapter 2"].waitForExistence(timeout: 5)
-        XCTAssertTrue(app.staticTexts["bible-version-note"].exists)
+        openSettings(in: app)
+        XCTAssertTrue(app.navigationBars["Settings"].exists)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Pills (Notes + Bible)
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class PillUITests: AppUITestCase {
+
+    @MainActor
+    func testPills_visibleOnHomeScreen() throws {
+        let app = launchApp()
+        XCTAssertTrue(app.buttons[AID.biblePill].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons[AID.notesPill].exists)
     }
 
-    // MARK: - Bible: cross-feature
+    @MainActor
+    func testPills_visibleDuringPrayerSession() throws {
+        let app = launchApp()
+        startSession(in: app)
+        XCTAssertTrue(app.buttons[AID.biblePill].exists, "Bible pill must stay visible during session")
+        XCTAssertTrue(app.buttons[AID.notesPill].exists, "Notes pill must stay visible during session")
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Bible
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class BibleUITests: AppUITestCase {
 
     @MainActor
     func testBible_opensFromHomePill() throws {
         let app = launchApp()
-        XCTAssertTrue(app.buttons["bible-pill-button"].waitForExistence(timeout: 3))
-        app.buttons["bible-pill-button"].tap()
-        XCTAssertTrue(app.staticTexts["Genesis 1"].waitForExistence(timeout: 5))
+        openBible(in: app)
+        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
     }
 
     @MainActor
     func testBible_opensFromPrayerSessionPill() throws {
         let app = launchApp()
-        XCTAssertTrue(app.buttons["prayer-play-button"].waitForExistence(timeout: 3))
-        app.buttons["prayer-play-button"].tap()
-        XCTAssertTrue(app.buttons["bible-pill-button"].waitForExistence(timeout: 3))
-        app.buttons["bible-pill-button"].tap()
-        XCTAssertTrue(app.staticTexts["Genesis 1"].waitForExistence(timeout: 5))
+        startSession(in: app)
+        openBible(in: app)
+        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
+    }
+
+    @MainActor
+    func testBible_hasCloseButton() throws {
+        let app = launchApp()
+        openBible(in: app)
+        XCTAssertTrue(
+            app.buttons.matching(NSPredicate(format: "label == 'Close'")).firstMatch
+                .waitForExistence(timeout: 3)
+        )
+    }
+
+    @MainActor
+    func testBible_closeButtonDismissesSheet() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons.matching(NSPredicate(format: "label == 'Close'")).firstMatch.tap()
+        XCTAssertTrue(app.buttons[AID.biblePill].waitForExistence(timeout: 3))
     }
 
     @MainActor
     func testBible_dismissDuringSessionKeepsSessionActive() throws {
         let app = launchApp()
-        XCTAssertTrue(app.buttons["prayer-play-button"].waitForExistence(timeout: 3))
-        app.buttons["prayer-play-button"].tap()
-        XCTAssertTrue(app.buttons["bible-pill-button"].waitForExistence(timeout: 3))
-        app.buttons["bible-pill-button"].tap()
-        XCTAssertTrue(app.staticTexts["Genesis 1"].waitForExistence(timeout: 5))
+        startSession(in: app)
+        openBible(in: app)
         let closeBtn = app.buttons.matching(NSPredicate(format: "label == 'Close'")).firstMatch
-        XCTAssertTrue(closeBtn.waitForExistence(timeout: 5), "Close button must exist in Bible")
+        XCTAssertTrue(closeBtn.waitForExistence(timeout: 5))
         closeBtn.tap()
         XCTAssertTrue(
-            app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch.waitForExistence(timeout: 3),
-            "Session must still be active after dismissing Bible"
+            app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch
+                .waitForExistence(timeout: 3),
+            "Prayer session must remain active after dismissing Bible"
         )
     }
 
-    // MARK: - Pill: always visible
+    @MainActor
+    func testBible_noKJVBadgeInToolbar() throws {
+        let app = launchApp()
+        openBible(in: app)
+        XCTAssertFalse(app.navigationBars.buttons["KJV"].exists)
+    }
 
     @MainActor
-    func testPill_visibleDuringPrayerSession() throws {
+    func testBible_versionNoteExists() throws {
         let app = launchApp()
-        XCTAssertTrue(app.buttons["prayer-play-button"].waitForExistence(timeout: 3))
-        app.buttons["prayer-play-button"].tap()
-        XCTAssertTrue(app.buttons["bible-pill-button"].waitForExistence(timeout: 3), "Bible pill must be visible during session")
-        XCTAssertTrue(app.buttons["notes-pill-button"].exists, "Notes pill must be visible during session")
+        openBible(in: app)
+        XCTAssertTrue(app.staticTexts[AID.bibleVersion].waitForExistence(timeout: 8))
     }
+
+    @MainActor
+    func testBible_versionNoteIsNotInteractive() throws {
+        let app = launchApp()
+        openBible(in: app)
+        _ = app.staticTexts[AID.bibleVersion].waitForExistence(timeout: 5)
+        XCTAssertFalse(app.buttons[AID.bibleVersion].exists)
+    }
+
+    @MainActor
+    func testBible_versionNotePersistsAcrossChapters() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons[AID.bibleNext].tap()
+        _ = app.staticTexts["Chapter 2"].waitForExistence(timeout: 5)
+        XCTAssertTrue(app.staticTexts[AID.bibleVersion].exists)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Notes
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class NotesUITests: AppUITestCase {
 
     @MainActor
     func testNotes_opensDuringPrayerSession() throws {
         let app = launchApp()
-        XCTAssertTrue(app.buttons["prayer-play-button"].waitForExistence(timeout: 3))
-        app.buttons["prayer-play-button"].tap()
-        XCTAssertTrue(app.buttons["notes-pill-button"].waitForExistence(timeout: 3))
-        app.buttons["notes-pill-button"].tap()
-        XCTAssertTrue(app.navigationBars["Notes"].waitForExistence(timeout: 3), "Notes must open during prayer session")
+        startSession(in: app)
+        openNotes(in: app)
+        XCTAssertTrue(app.navigationBars["Notes"].exists)
     }
-
-    // MARK: - Notes: close button
 
     @MainActor
     func testNotes_hasCloseButton() throws {
         let app = launchApp()
         openNotes(in: app)
-        XCTAssertTrue(app.buttons["notes-close-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons[AID.notesClose].waitForExistence(timeout: 3))
     }
 
     @MainActor
     func testNotes_closeButtonDismissesSheet() throws {
         let app = launchApp()
         openNotes(in: app)
-        XCTAssertTrue(app.buttons["notes-close-button"].waitForExistence(timeout: 3))
-        app.buttons["notes-close-button"].tap()
-        XCTAssertTrue(app.buttons["notes-pill-button"].waitForExistence(timeout: 3))
+        app.buttons[AID.notesClose].tap()
+        XCTAssertTrue(app.buttons[AID.notesPill].waitForExistence(timeout: 3))
     }
 
     @MainActor
     func testNotes_closeButtonWorksFromInsideNote() throws {
         let app = launchApp()
         openNotes(in: app)
-        _ = app.buttons["notes-close-button"].waitForExistence(timeout: 3)
-        app.buttons["notes-new-button"].tap()
-        _ = app.textViews["note-body-editor"].waitForExistence(timeout: 3)
+        _ = app.buttons[AID.notesClose].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        _ = app.textViews[AID.noteBody].waitForExistence(timeout: 3)
         app.navigationBars.buttons["Notes"].tap()
-        XCTAssertTrue(app.buttons["notes-close-button"].waitForExistence(timeout: 3))
-        app.buttons["notes-close-button"].tap()
-        XCTAssertTrue(app.buttons["notes-pill-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons[AID.notesClose].waitForExistence(timeout: 3))
+        app.buttons[AID.notesClose].tap()
+        XCTAssertTrue(app.buttons[AID.notesPill].waitForExistence(timeout: 3))
     }
-
-    // MARK: - Notes: focus behavior
 
     @MainActor
     func testNotes_newNote_cursorInBody() throws {
         let app = launchApp()
         openNotes(in: app)
-        _ = app.buttons["notes-new-button"].waitForExistence(timeout: 3)
-        app.buttons["notes-new-button"].tap()
-        let bodyEditor = app.textViews["note-body-editor"]
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        let bodyEditor = app.textViews[AID.noteBody]
         XCTAssertTrue(bodyEditor.waitForExistence(timeout: 3))
-        XCTAssertTrue(bodyEditor.value(forKey: "hasKeyboardFocus") as? Bool ?? false,
-                      "New note must auto-focus the body")
+        XCTAssertTrue(
+            bodyEditor.value(forKey: "hasKeyboardFocus") as? Bool ?? false,
+            "New note must auto-focus the body"
+        )
     }
 
     @MainActor
     func testNotes_existingNote_noAutoFocus() throws {
         let app = launchApp()
         openNotes(in: app)
-        _ = app.buttons["notes-new-button"].waitForExistence(timeout: 3)
-        app.buttons["notes-new-button"].tap()
-        let titleField = app.textFields["note-title-field"]
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        let titleField = app.textFields[AID.noteTitleField]
         _ = titleField.waitForExistence(timeout: 3)
         titleField.tap()
         titleField.typeText("Test Note")
         app.navigationBars.buttons["Notes"].tap()
         XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
         app.cells.firstMatch.tap()
-        let bodyEditor = app.textViews["note-body-editor"]
+        let bodyEditor = app.textViews[AID.noteBody]
         XCTAssertTrue(bodyEditor.waitForExistence(timeout: 3))
-        XCTAssertFalse(bodyEditor.value(forKey: "hasKeyboardFocus") as? Bool ?? false,
-                       "Existing note must not auto-focus the body")
+        XCTAssertFalse(
+            bodyEditor.value(forKey: "hasKeyboardFocus") as? Bool ?? false,
+            "Existing note must not auto-focus the body"
+        )
     }
-
-    // MARK: - Note editor: Done button
 
     @MainActor
     func testNoteEditor_hasDoneButton() throws {
         let app = launchApp()
         openNotes(in: app)
-        _ = app.buttons["notes-new-button"].waitForExistence(timeout: 3)
-        app.buttons["notes-new-button"].tap()
-        XCTAssertTrue(app.buttons["note-done-button"].waitForExistence(timeout: 3))
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        XCTAssertTrue(app.buttons[AID.noteDone].waitForExistence(timeout: 3))
     }
 
     @MainActor
     func testNoteEditor_doneButtonDismissesKeyboard() throws {
         let app = launchApp()
         openNotes(in: app)
-        _ = app.buttons["notes-new-button"].waitForExistence(timeout: 3)
-        app.buttons["notes-new-button"].tap()
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3), "Keyboard must appear on new note")
-        app.buttons["note-done-button"].tap()
+        app.buttons[AID.noteDone].tap()
         XCTAssertFalse(app.keyboards.firstMatch.exists, "Keyboard must be dismissed after tapping Done")
     }
+}
 
-    // MARK: - Settings
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Settings
+// ─────────────────────────────────────────────────────────────────────────────
 
-    @MainActor
-    func testSettings_noFocusModeSection() throws {
-        let app = launchApp()
-        app.buttons["settings-gear-button"].tap()
-        _ = app.navigationBars["Settings"].waitForExistence(timeout: 3)
-        XCTAssertFalse(app.staticTexts["Focus Mode"].exists)
-    }
+final class SettingsUITests: AppUITestCase {
 
     @MainActor
     func testSettings_requiredSectionsExist() throws {
         let app = launchApp()
-        app.buttons["settings-gear-button"].tap()
-        _ = app.navigationBars["Settings"].waitForExistence(timeout: 3)
+        openSettings(in: app)
         XCTAssertTrue(app.staticTexts["Prayer Audio"].exists)
         XCTAssertTrue(app.staticTexts["Interruptions"].exists)
     }
 
-    // MARK: - Onboarding layout
+    @MainActor
+    func testSettings_noFocusModeSection() throws {
+        let app = launchApp()
+        openSettings(in: app)
+        XCTAssertFalse(app.staticTexts["Focus Mode"].exists)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Onboarding
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class OnboardingUITests: AppUITestCase {
 
     @MainActor
-    func testWelcome_ctaHittableOnSmallDevice() throws {
+    func testWelcome_ctaHittable() throws {
         let app = launchOnboarding()
         let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
         XCTAssertTrue(cta.waitForExistence(timeout: 3))
@@ -240,37 +389,39 @@ final class HstningUITests: XCTestCase {
     }
 
     @MainActor
-    func testWelcome_allFeatureRowsVisibleOnSmallDevice() throws {
+    func testWelcome_allFeatureRowsVisible() throws {
         let app = launchOnboarding()
-        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch.waitForExistence(timeout: 3)
+        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+            .waitForExistence(timeout: 3)
         for label in ["Pray without distractions", "Bible", "Notes"] {
-            XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible")
+            XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible on Welcome screen")
         }
     }
 
     @MainActor
-    func testSilence_ctaHittableOnSmallDevice() throws {
+    func testSilence_ctaHittable() throws {
         let app = launchOnboarding()
-        app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch.tap()
+        advanceOnboarding(in: app)
         let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open Settings'")).firstMatch
         XCTAssertTrue(cta.waitForExistence(timeout: 3))
         XCTAssertTrue(cta.isHittable)
     }
 
     @MainActor
-    func testSilence_allStepRowsVisibleOnSmallDevice() throws {
+    func testSilence_allStepRowsVisible() throws {
         let app = launchOnboarding()
-        app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch.tap()
-        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open Settings'")).firstMatch.waitForExistence(timeout: 3)
+        advanceOnboarding(in: app)
+        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open Settings'")).firstMatch
+            .waitForExistence(timeout: 3)
         for label in ["Open Settings", "Choose a Focus", "Set a schedule", "Add Holystening"] {
-            XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible")
+            XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible on Silence screen")
         }
     }
 
     @MainActor
-    func testCongrats_ctaHittableOnSmallDevice() throws {
+    func testCongrats_ctaHittable() throws {
         let app = launchOnboarding()
-        app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch.tap()
+        advanceOnboarding(in: app)
         let openSettings = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Open Settings'")).firstMatch
         XCTAssertTrue(openSettings.waitForExistence(timeout: 3))
         openSettings.tap()
@@ -281,8 +432,49 @@ final class HstningUITests: XCTestCase {
         XCTAssertTrue(startCTA.waitForExistence(timeout: 3))
         XCTAssertTrue(startCTA.isHittable)
     }
+}
 
-    // MARK: - Launch performance
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Dark Mode
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class DarkModeUITests: AppUITestCase {
+
+    override func tearDownWithError() throws {
+        XCUIDevice.shared.appearance = .unspecified
+    }
+
+    @MainActor
+    func testHome_pillsHittableInDarkMode() throws {
+        let app = launchApp(darkMode: true)
+        XCTAssertTrue(app.buttons[AID.biblePill].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons[AID.biblePill].isHittable)
+        XCTAssertTrue(app.buttons[AID.notesPill].isHittable)
+        XCTAssertTrue(app.buttons[AID.playButton].isHittable)
+    }
+
+    @MainActor
+    func testBible_contentVisibleInDarkMode() throws {
+        let app = launchApp(darkMode: true)
+        openBible(in: app)
+        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
+        XCTAssertTrue(app.staticTexts[AID.bibleVersion].waitForExistence(timeout: 8))
+    }
+
+    @MainActor
+    func testOnboarding_ctaHittableInDarkMode() throws {
+        let app = launchOnboarding(darkMode: true)
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        XCTAssertTrue(cta.waitForExistence(timeout: 3))
+        XCTAssertTrue(cta.isHittable)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARK: - Performance
+// ─────────────────────────────────────────────────────────────────────────────
+
+final class PerformanceUITests: AppUITestCase {
 
     @MainActor
     func testLaunchPerformance() throws {
