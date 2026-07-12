@@ -3,8 +3,10 @@ import PencilKit
 
 struct NoteEditorView: View {
     @Bindable var note: Note
+    @Environment(\.modelContext) private var modelContext
     @State private var showDrawing = false
     @State private var drawing = PKDrawing()
+    @State private var hasUnsavedChanges = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -17,7 +19,10 @@ struct NoteEditorView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
-                .onChange(of: note.title) { _, _ in note.updatedAt = .now }
+                .onChange(of: note.title) { _, _ in
+                    note.updatedAt = .now
+                    hasUnsavedChanges = true
+                }
 
             Divider().padding(.horizontal, 20)
 
@@ -27,6 +32,7 @@ struct NoteEditorView: View {
                     .onChange(of: drawing) { _, new in
                         note.drawingData = new.dataRepresentation()
                         note.updatedAt = .now
+                        hasUnsavedChanges = true
                     }
             } else {
                 TextEditor(text: $note.content)
@@ -35,17 +41,25 @@ struct NoteEditorView: View {
                     .padding(.vertical, 8)
                     .focused($bodyFocused)
                     .accessibilityIdentifier("note-body-editor")
-                    .onChange(of: note.content) { _, _ in note.updatedAt = .now }
+                    .onChange(of: note.content) { _, _ in
+                        note.updatedAt = .now
+                        hasUnsavedChanges = true
+                    }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
-                    titleFocused = false
-                    bodyFocused = false
+            if hasUnsavedChanges {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: saveNote) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.black)
+                            .frame(width: 30, height: 30)
+                            .background(Circle().fill(AppColors.gold))
+                    }
+                    .accessibilityIdentifier("note-done-button")
                 }
-                .accessibilityIdentifier("note-done-button")
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -59,9 +73,18 @@ struct NoteEditorView: View {
             if let data = note.drawingData, let saved = try? PKDrawing(data: data) {
                 drawing = saved
             }
-            if note.title.isEmpty && note.content.isEmpty {
+            let isNewNote = note.title.isEmpty && note.content.isEmpty && note.drawingData == nil
+            if isNewNote {
                 bodyFocused = true
+                hasUnsavedChanges = true
             }
         }
+    }
+
+    private func saveNote() {
+        titleFocused = false
+        bodyFocused = false
+        try? modelContext.save()
+        hasUnsavedChanges = false
     }
 }
