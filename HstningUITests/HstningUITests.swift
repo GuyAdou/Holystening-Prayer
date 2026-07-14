@@ -36,6 +36,7 @@ class AppUITestCase: XCTestCase {
         static let biblePrev      = "bible-prev-chapter"
         static let bibleNext      = "bible-next-chapter"
         static let bibleVersion   = "bible-version-note"
+        static let biblePickerTrigger = "bible-picker-trigger"
         // Notes list
         static let notesClose     = "notes-close-button"
         static let notesNew       = "notes-new-button"
@@ -74,12 +75,12 @@ class AppUITestCase: XCTestCase {
         return app
     }
 
-    /// Opens the Bible sheet and waits for Genesis 1 to confirm the content loaded.
+    /// Opens the Bible sheet and waits for the Genesis 1 picker trigger to confirm the content loaded.
     @MainActor
     func openBible(in app: XCUIApplication) {
         XCTAssertTrue(app.buttons[AID.biblePill].waitForExistence(timeout: 3))
         app.buttons[AID.biblePill].tap()
-        _ = app.staticTexts["Genesis 1"].waitForExistence(timeout: 5)
+        _ = app.buttons[AID.biblePickerTrigger].waitForExistence(timeout: 5)
     }
 
     /// Opens the Notes sheet and waits for the Notes navigation bar to appear.
@@ -178,7 +179,7 @@ final class BibleUITests: AppUITestCase {
     func testBible_opensFromHomePill() throws {
         let app = launchApp()
         openBible(in: app)
-        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
+        XCTAssertTrue(app.buttons[AID.biblePickerTrigger].exists)
     }
 
     @MainActor
@@ -186,7 +187,7 @@ final class BibleUITests: AppUITestCase {
         let app = launchApp()
         startSession(in: app)
         openBible(in: app)
-        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
+        XCTAssertTrue(app.buttons[AID.biblePickerTrigger].exists)
     }
 
     @MainActor
@@ -251,6 +252,63 @@ final class BibleUITests: AppUITestCase {
         app.buttons[AID.bibleNext].tap()
         _ = app.staticTexts["Chapter 2"].waitForExistence(timeout: 5)
         XCTAssertTrue(app.staticTexts[AID.bibleVersion].exists)
+    }
+
+    @MainActor
+    func testBible_pickerOpensFromTitle() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons[AID.biblePickerTrigger].tap()
+        XCTAssertTrue(app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testBible_pickerNavigatesToSelectedBookAndChapter() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons[AID.biblePickerTrigger].tap()
+        _ = app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3)
+
+        app.buttons["bible-book-John"].tap()
+        let chapter3 = app.buttons["bible-chapter-3"]
+        XCTAssertTrue(chapter3.waitForExistence(timeout: 3))
+        chapter3.tap()
+
+        let trigger = app.buttons[AID.biblePickerTrigger]
+        XCTAssertTrue(trigger.waitForExistence(timeout: 3))
+        XCTAssertTrue(trigger.label.contains("John"))
+        XCTAssertTrue(trigger.label.contains("3"))
+    }
+
+    @MainActor
+    func testBible_pickerBackButtonReturnsToBookList() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons[AID.biblePickerTrigger].tap()
+        _ = app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3)
+
+        app.buttons["bible-book-Psalms"].tap()
+        XCTAssertTrue(app.buttons["bible-chapter-1"].waitForExistence(timeout: 3))
+
+        app.buttons["bible-picker-back-to-books"].tap()
+        XCTAssertTrue(app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testBible_nextChapterCrossesIntoNextBook() throws {
+        let app = launchApp()
+        openBible(in: app)
+        app.buttons[AID.biblePickerTrigger].tap()
+        _ = app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3)
+        app.buttons["bible-book-Ruth"].tap()
+        app.buttons["bible-chapter-4"].tap()
+
+        _ = app.buttons[AID.biblePickerTrigger].waitForExistence(timeout: 3)
+        app.buttons[AID.bibleNext].tap()
+
+        let trigger = app.buttons[AID.biblePickerTrigger]
+        XCTAssertTrue(trigger.waitForExistence(timeout: 3))
+        XCTAssertTrue(trigger.label.contains("1 Samuel"), "Chapter Next from Ruth 4 (its last chapter) must roll into 1 Samuel 1")
     }
 }
 
@@ -514,7 +572,7 @@ final class DarkModeUITests: AppUITestCase {
     func testBible_contentVisibleInDarkMode() throws {
         let app = launchApp(darkMode: true)
         openBible(in: app)
-        XCTAssertTrue(app.staticTexts["Genesis 1"].exists)
+        XCTAssertTrue(app.buttons[AID.biblePickerTrigger].exists)
         XCTAssertTrue(app.staticTexts[AID.bibleVersion].waitForExistence(timeout: 8))
     }
 
