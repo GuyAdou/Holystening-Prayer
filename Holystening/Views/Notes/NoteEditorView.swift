@@ -1,10 +1,7 @@
 import SwiftUI
-import PencilKit
 
 struct NoteEditorView: View {
     @Bindable var note: Note
-    @State private var showDrawing = false
-    @State private var drawing = PKDrawing()
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -21,22 +18,13 @@ struct NoteEditorView: View {
 
             Divider().padding(.horizontal, 20)
 
-            if showDrawing {
-                DrawingCanvas(drawing: $drawing)
-                    .ignoresSafeArea(edges: .bottom)
-                    .onChange(of: drawing) { _, new in
-                        note.drawingData = new.dataRepresentation()
-                        note.updatedAt = .now
-                    }
-            } else {
-                TextEditor(text: $note.content)
-                    .font(.body)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .focused($bodyFocused)
-                    .accessibilityIdentifier("note-body-editor")
-                    .onChange(of: note.content) { _, _ in note.updatedAt = .now }
-            }
+            TextEditor(text: $note.content)
+                .font(.body)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .focused($bodyFocused)
+                .accessibilityIdentifier("note-body-editor")
+                .onChange(of: note.content) { _, _ in note.updatedAt = .now }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -47,18 +35,8 @@ struct NoteEditorView: View {
                 }
                 .accessibilityIdentifier("note-done-button")
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showDrawing.toggle()
-                } label: {
-                    Image(systemName: showDrawing ? "text.alignleft" : "pencil.tip")
-                }
-            }
         }
         .onAppear {
-            if let data = note.drawingData, let saved = try? PKDrawing(data: data) {
-                drawing = saved
-            }
             if note.title.isEmpty && note.content.isEmpty {
                 bodyFocused = true
             }
