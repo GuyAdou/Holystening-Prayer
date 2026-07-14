@@ -350,6 +350,63 @@ final class NotesUITests: AppUITestCase {
         app.buttons[AID.noteDone].tap()
         XCTAssertFalse(app.keyboards.firstMatch.exists, "Keyboard must be dismissed after tapping Done")
     }
+
+    @MainActor
+    func testNoteEditor_checkmarkHidesAfterSave() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        XCTAssertTrue(
+            app.buttons[AID.noteDone].waitForExistence(timeout: 3),
+            "Checkmark must show for a new, unsaved note"
+        )
+        app.buttons[AID.noteDone].tap()
+        XCTAssertFalse(
+            app.buttons[AID.noteDone].waitForExistence(timeout: 2),
+            "Checkmark must disappear once the note is saved"
+        )
+    }
+
+    @MainActor
+    func testNoteEditor_checkmarkReappearsWhenEditingAgain() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        XCTAssertTrue(app.buttons[AID.noteDone].waitForExistence(timeout: 3))
+        app.buttons[AID.noteDone].tap()
+        XCTAssertFalse(app.buttons[AID.noteDone].waitForExistence(timeout: 2))
+
+        let bodyEditor = app.textViews[AID.noteBody]
+        bodyEditor.tap()
+        bodyEditor.typeText("More thoughts")
+        XCTAssertTrue(
+            app.buttons[AID.noteDone].waitForExistence(timeout: 3),
+            "Checkmark must reappear once typing resumes after a save"
+        )
+    }
+
+    @MainActor
+    func testNoteEditor_existingSavedNote_checkmarkHiddenUntilEdited() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        let titleField = app.textFields[AID.noteTitleField]
+        _ = titleField.waitForExistence(timeout: 3)
+        titleField.tap()
+        titleField.typeText("Saved note")
+        app.buttons[AID.noteDone].tap()
+        app.navigationBars.buttons["Notes"].tap()
+
+        XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
+        app.cells.firstMatch.tap()
+        XCTAssertFalse(
+            app.buttons[AID.noteDone].waitForExistence(timeout: 2),
+            "Checkmark must not show when reopening an already-saved, unedited note"
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,7 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct NoteEditorView: View {
     @Bindable var note: Note
+    @Environment(\.modelContext) private var modelContext
+    @State private var hasUnsavedChanges = false
     @FocusState private var titleFocused: Bool
     @FocusState private var bodyFocused: Bool
 
@@ -14,7 +17,10 @@ struct NoteEditorView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
-                .onChange(of: note.title) { _, _ in note.updatedAt = .now }
+                .onChange(of: note.title) { _, _ in
+                    note.updatedAt = .now
+                    hasUnsavedChanges = true
+                }
 
             Divider().padding(.horizontal, 20)
 
@@ -24,22 +30,38 @@ struct NoteEditorView: View {
                 .padding(.vertical, 8)
                 .focused($bodyFocused)
                 .accessibilityIdentifier("note-body-editor")
-                .onChange(of: note.content) { _, _ in note.updatedAt = .now }
+                .onChange(of: note.content) { _, _ in
+                    note.updatedAt = .now
+                    hasUnsavedChanges = true
+                }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
-                    titleFocused = false
-                    bodyFocused = false
+            if hasUnsavedChanges {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: saveNote) {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(AppColors.gold)
+                    .accessibilityIdentifier("note-done-button")
                 }
-                .accessibilityIdentifier("note-done-button")
             }
         }
         .onAppear {
-            if note.title.isEmpty && note.content.isEmpty {
+            let isNewNote = note.title.isEmpty && note.content.isEmpty
+            if isNewNote {
                 bodyFocused = true
+                hasUnsavedChanges = true
             }
         }
+    }
+
+    private func saveNote() {
+        titleFocused = false
+        bodyFocused = false
+        try? modelContext.save()
+        hasUnsavedChanges = false
     }
 }
