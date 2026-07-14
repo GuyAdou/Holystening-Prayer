@@ -41,8 +41,7 @@ struct NotesView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") { dismiss() }
-                        .accessibilityIdentifier("notes-close-button")
+                    CloseButton(identifier: "notes-close-button") { dismiss() }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: addNote) {

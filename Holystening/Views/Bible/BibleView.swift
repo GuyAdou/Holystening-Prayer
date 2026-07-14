@@ -57,8 +57,7 @@ struct BibleView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") { dismiss() }
-                        .accessibilityIdentifier("bible-close-button")
+                    CloseButton(identifier: "bible-close-button") { dismiss() }
                 }
                 ToolbarItem(placement: .principal) {
                     Text("Genesis \(chapter)")

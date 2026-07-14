@@ -99,7 +99,7 @@ struct FixInterruptionsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { dismiss() }
+                    CloseButton(identifier: "fix-interruptions-close-button") { dismiss() }
                 }
             }
         }
