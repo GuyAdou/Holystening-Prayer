@@ -98,10 +98,10 @@ class AppUITestCase: XCTestCase {
         _ = app.navigationBars["Settings"].waitForExistence(timeout: 3)
     }
 
-    /// Taps the "Get started" CTA on the Welcome onboarding screen.
+    /// Taps the "Continue" CTA on the Welcome onboarding screen.
     @MainActor
     func advanceOnboarding(in app: XCUIApplication) {
-        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
         XCTAssertTrue(cta.waitForExistence(timeout: 3))
         cta.tap()
     }
@@ -440,7 +440,7 @@ final class OnboardingUITests: AppUITestCase {
     @MainActor
     func testWelcome_ctaHittable() throws {
         let app = launchOnboarding()
-        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
         XCTAssertTrue(cta.waitForExistence(timeout: 3))
         XCTAssertTrue(cta.isHittable)
     }
@@ -448,7 +448,7 @@ final class OnboardingUITests: AppUITestCase {
     @MainActor
     func testWelcome_allFeatureRowsVisible() throws {
         let app = launchOnboarding()
-        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
             .waitForExistence(timeout: 3)
         for label in ["Pray without distractions", "Bible", "Notes"] {
             XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible on Welcome screen")
@@ -521,7 +521,7 @@ final class DarkModeUITests: AppUITestCase {
     @MainActor
     func testOnboarding_ctaHittableInDarkMode() throws {
         let app = launchOnboarding(darkMode: true)
-        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Get started'")).firstMatch
+        let cta = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
         XCTAssertTrue(cta.waitForExistence(timeout: 3))
         XCTAssertTrue(cta.isHittable)
     }
