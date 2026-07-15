@@ -10,11 +10,11 @@ struct CloseButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(.secondary)
-                .frame(width: 28, height: 28)
-                .background(Circle().fill(Color(uiColor: .systemGray5)))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(.primary)
+                .frame(width: 30, height: 30)
         }
+        .buttonStyle(.glass)
         .accessibilityLabel("Close")
         .accessibilityIdentifier(identifier)
     }
