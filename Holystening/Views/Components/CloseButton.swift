@@ -14,7 +14,7 @@ struct CloseButton: View {
                 .foregroundStyle(.primary)
                 .frame(width: 30, height: 30)
         }
-        .buttonStyle(.glass)
+        .glassEffect(in: Circle())
         .accessibilityLabel("Close")
         .accessibilityIdentifier(identifier)
     }
