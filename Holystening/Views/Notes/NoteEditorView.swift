@@ -37,16 +37,15 @@ struct NoteEditorView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if hasUnsavedChanges {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: saveNote) {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 14, weight: .bold))
-                    }
-                    .buttonStyle(.glassProminent)
-                    .tint(AppColors.gold)
-                    .accessibilityIdentifier("note-done-button")
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: saveNote) {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold))
                 }
+                .buttonStyle(.glassProminent)
+                .tint(hasUnsavedChanges ? AppColors.gold : Color(uiColor: .systemGray3))
+                .accessibilityIdentifier("note-done-button")
+                .accessibilityValue(hasUnsavedChanges ? "unsaved" : "saved")
             }
         }
         .onAppear {

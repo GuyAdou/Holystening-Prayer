@@ -410,43 +410,41 @@ final class NotesUITests: AppUITestCase {
     }
 
     @MainActor
-    func testNoteEditor_checkmarkHidesAfterSave() throws {
+    func testNoteEditor_checkmarkTurnsGrayAfterSave() throws {
         let app = launchApp()
         openNotes(in: app)
         _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
         app.buttons[AID.notesNew].tap()
-        XCTAssertTrue(
-            app.buttons[AID.noteDone].waitForExistence(timeout: 3),
-            "Checkmark must show for a new, unsaved note"
-        )
-        app.buttons[AID.noteDone].tap()
-        XCTAssertFalse(
-            app.buttons[AID.noteDone].waitForExistence(timeout: 2),
-            "Checkmark must disappear once the note is saved"
-        )
+        let checkmark = app.buttons[AID.noteDone]
+        XCTAssertTrue(checkmark.waitForExistence(timeout: 3), "Checkmark must always be visible")
+        XCTAssertEqual(checkmark.value as? String, "unsaved", "New note starts unsaved (gold)")
+
+        checkmark.tap()
+        XCTAssertEqual(checkmark.value as? String, "saved", "Checkmark must turn gray once the note is saved")
     }
 
     @MainActor
-    func testNoteEditor_checkmarkReappearsWhenEditingAgain() throws {
+    func testNoteEditor_checkmarkTurnsGoldWhenEditingAgain() throws {
         let app = launchApp()
         openNotes(in: app)
         _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
         app.buttons[AID.notesNew].tap()
-        XCTAssertTrue(app.buttons[AID.noteDone].waitForExistence(timeout: 3))
-        app.buttons[AID.noteDone].tap()
-        XCTAssertFalse(app.buttons[AID.noteDone].waitForExistence(timeout: 2))
+        let checkmark = app.buttons[AID.noteDone]
+        _ = checkmark.waitForExistence(timeout: 3)
+        checkmark.tap()
+        XCTAssertEqual(checkmark.value as? String, "saved")
 
         let bodyEditor = app.textViews[AID.noteBody]
         bodyEditor.tap()
         bodyEditor.typeText("More thoughts")
-        XCTAssertTrue(
-            app.buttons[AID.noteDone].waitForExistence(timeout: 3),
-            "Checkmark must reappear once typing resumes after a save"
+        XCTAssertEqual(
+            checkmark.value as? String, "unsaved",
+            "Checkmark must turn gold again once typing resumes after a save"
         )
     }
 
     @MainActor
-    func testNoteEditor_existingSavedNote_checkmarkHiddenUntilEdited() throws {
+    func testNoteEditor_existingSavedNote_checkmarkStaysGrayUntilEdited() throws {
         let app = launchApp()
         openNotes(in: app)
         _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
@@ -460,9 +458,11 @@ final class NotesUITests: AppUITestCase {
 
         XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
         app.cells.firstMatch.tap()
-        XCTAssertFalse(
-            app.buttons[AID.noteDone].waitForExistence(timeout: 2),
-            "Checkmark must not show when reopening an already-saved, unedited note"
+        let checkmark = app.buttons[AID.noteDone]
+        XCTAssertTrue(checkmark.waitForExistence(timeout: 3))
+        XCTAssertEqual(
+            checkmark.value as? String, "saved",
+            "Checkmark must stay gray when reopening an already-saved, unedited note"
         )
     }
 }
