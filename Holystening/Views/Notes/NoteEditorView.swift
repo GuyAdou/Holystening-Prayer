@@ -19,7 +19,7 @@ struct NoteEditorView: View {
                 .padding(.bottom, 8)
                 .onChange(of: note.title) { _, _ in
                     note.updatedAt = .now
-                    hasUnsavedChanges = true
+                    withAnimation { hasUnsavedChanges = true }
                 }
 
             Divider().padding(.horizontal, 20)
@@ -32,7 +32,7 @@ struct NoteEditorView: View {
                 .accessibilityIdentifier("note-body-editor")
                 .onChange(of: note.content) { _, _ in
                     note.updatedAt = .now
-                    hasUnsavedChanges = true
+                    withAnimation { hasUnsavedChanges = true }
                 }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -44,6 +44,7 @@ struct NoteEditorView: View {
                 }
                 .buttonStyle(.glassProminent)
                 .tint(hasUnsavedChanges ? AppColors.gold : Color(uiColor: .systemGray3))
+                .id(hasUnsavedChanges)
                 .accessibilityIdentifier("note-done-button")
                 .accessibilityValue(hasUnsavedChanges ? "unsaved" : "saved")
             }
@@ -61,6 +62,6 @@ struct NoteEditorView: View {
         titleFocused = false
         bodyFocused = false
         try? modelContext.save()
-        hasUnsavedChanges = false
+        withAnimation { hasUnsavedChanges = false }
     }
 }
