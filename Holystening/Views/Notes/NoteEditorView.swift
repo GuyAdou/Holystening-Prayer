@@ -60,14 +60,24 @@ struct NoteEditorView: View {
             }
         }
         .onDisappear {
-            try? modelContext.save()
+            saveOrDiscard()
         }
     }
 
     private func saveNote() {
         titleFocused = false
         bodyFocused = false
-        try? modelContext.save()
+        saveOrDiscard()
         withAnimation { hasUnsavedChanges = false }
+    }
+
+    /// Deletes the note instead of saving it if the user leaves both title
+    /// and body empty — an untouched new note should never be listed.
+    private func saveOrDiscard() {
+        if note.title.isEmpty && note.content.isEmpty {
+            modelContext.delete(note)
+        } else {
+            try? modelContext.save()
+        }
     }
 }

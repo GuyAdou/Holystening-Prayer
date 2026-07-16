@@ -514,6 +514,44 @@ final class NotesUITests: AppUITestCase {
             "Edits must persist even when the user navigates away without tapping the checkmark"
         )
     }
+
+    @MainActor
+    func testNoteEditor_emptyNoteNotSavedOnNavigateAway() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        let countBefore = app.cells.count
+
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        _ = app.textViews[AID.noteBody].waitForExistence(timeout: 3)
+        // Type nothing in either field, just navigate back.
+        app.navigationBars.buttons["Notes"].tap()
+
+        _ = app.navigationBars["Notes"].waitForExistence(timeout: 3)
+        XCTAssertEqual(
+            app.cells.count, countBefore,
+            "A new note left with empty title and body must not be saved or listed"
+        )
+    }
+
+    @MainActor
+    func testNoteEditor_emptyNoteNotSavedViaCheckmark() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        let countBefore = app.cells.count
+
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        _ = app.textViews[AID.noteBody].waitForExistence(timeout: 3)
+        app.buttons[AID.noteDone].tap()
+        app.navigationBars.buttons["Notes"].tap()
+
+        _ = app.navigationBars["Notes"].waitForExistence(timeout: 3)
+        XCTAssertEqual(
+            app.cells.count, countBefore,
+            "Tapping the checkmark on an empty note must not save it either"
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
