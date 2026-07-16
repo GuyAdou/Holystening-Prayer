@@ -490,6 +490,30 @@ final class NotesUITests: AppUITestCase {
             "Checkmark must turn gold as soon as a field gains focus, before any text is typed"
         )
     }
+
+    @MainActor
+    func testNoteEditor_savesAutomaticallyOnNavigateAwayWithoutCheckmark() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        let titleField = app.textFields[AID.noteTitleField]
+        _ = titleField.waitForExistence(timeout: 3)
+        titleField.tap()
+        titleField.typeText("Unconfirmed note")
+
+        // Navigate back WITHOUT tapping the checkmark.
+        app.navigationBars.buttons["Notes"].tap()
+
+        XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
+        app.cells.firstMatch.tap()
+        let reopenedTitle = app.textFields[AID.noteTitleField]
+        XCTAssertTrue(reopenedTitle.waitForExistence(timeout: 3))
+        XCTAssertEqual(
+            reopenedTitle.value as? String, "Unconfirmed note",
+            "Edits must persist even when the user navigates away without tapping the checkmark"
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

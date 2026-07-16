@@ -59,6 +59,9 @@ struct NoteEditorView: View {
                 bodyFocused = true
             }
         }
+        .onDisappear {
+            try? modelContext.save()
+        }
     }
 
     private func saveNote() {
