@@ -465,6 +465,31 @@ final class NotesUITests: AppUITestCase {
             "Checkmark must stay gray when reopening an already-saved, unedited note"
         )
     }
+
+    @MainActor
+    func testNoteEditor_checkmarkTurnsGoldOnFocusBeforeTyping() throws {
+        let app = launchApp()
+        openNotes(in: app)
+        _ = app.buttons[AID.notesNew].waitForExistence(timeout: 3)
+        app.buttons[AID.notesNew].tap()
+        let titleField = app.textFields[AID.noteTitleField]
+        _ = titleField.waitForExistence(timeout: 3)
+        titleField.tap()
+        titleField.typeText("Saved note")
+        app.buttons[AID.noteDone].tap()
+        app.navigationBars.buttons["Notes"].tap()
+
+        XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
+        app.cells.firstMatch.tap()
+        let checkmark = app.buttons[AID.noteDone]
+        XCTAssertEqual(checkmark.value as? String, "saved")
+
+        app.textViews[AID.noteBody].tap()
+        XCTAssertEqual(
+            checkmark.value as? String, "unsaved",
+            "Checkmark must turn gold as soon as a field gains focus, before any text is typed"
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

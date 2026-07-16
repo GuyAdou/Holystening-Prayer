@@ -19,7 +19,6 @@ struct NoteEditorView: View {
                 .padding(.bottom, 8)
                 .onChange(of: note.title) { _, _ in
                     note.updatedAt = .now
-                    withAnimation { hasUnsavedChanges = true }
                 }
 
             Divider().padding(.horizontal, 20)
@@ -32,8 +31,13 @@ struct NoteEditorView: View {
                 .accessibilityIdentifier("note-body-editor")
                 .onChange(of: note.content) { _, _ in
                     note.updatedAt = .now
-                    withAnimation { hasUnsavedChanges = true }
                 }
+        }
+        .onChange(of: titleFocused) { _, focused in
+            if focused { withAnimation { hasUnsavedChanges = true } }
+        }
+        .onChange(of: bodyFocused) { _, focused in
+            if focused { withAnimation { hasUnsavedChanges = true } }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -53,7 +57,6 @@ struct NoteEditorView: View {
             let isNewNote = note.title.isEmpty && note.content.isEmpty
             if isNewNote {
                 bodyFocused = true
-                hasUnsavedChanges = true
             }
         }
     }
