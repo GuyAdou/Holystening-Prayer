@@ -269,14 +269,17 @@ final class BibleUITests: AppUITestCase {
         app.buttons[AID.biblePickerTrigger].tap()
         _ = app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3)
 
-        app.buttons["bible-book-John"].tap()
+        // Picks a book near the top of the list — SwiftUI's List is lazy, so a
+        // row far down (e.g. John, Psalms) may not exist in the accessibility
+        // tree yet without scrolling first.
+        app.buttons["bible-book-Exodus"].tap()
         let chapter3 = app.buttons["bible-chapter-3"]
         XCTAssertTrue(chapter3.waitForExistence(timeout: 3))
         chapter3.tap()
 
         let trigger = app.buttons[AID.biblePickerTrigger]
         XCTAssertTrue(trigger.waitForExistence(timeout: 3))
-        XCTAssertTrue(trigger.label.contains("John"))
+        XCTAssertTrue(trigger.label.contains("Exodus"))
         XCTAssertTrue(trigger.label.contains("3"))
     }
 
@@ -287,7 +290,7 @@ final class BibleUITests: AppUITestCase {
         app.buttons[AID.biblePickerTrigger].tap()
         _ = app.buttons["bible-book-Genesis"].waitForExistence(timeout: 3)
 
-        app.buttons["bible-book-Psalms"].tap()
+        app.buttons["bible-book-Leviticus"].tap()
         XCTAssertTrue(app.buttons["bible-chapter-1"].waitForExistence(timeout: 3))
 
         app.buttons["bible-picker-back-to-books"].tap()
