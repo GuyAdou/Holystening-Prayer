@@ -28,12 +28,25 @@ enum AppColors {
 
     // MARK: - Logo-derived tones
     /// Sampled from the cloudy sky background of the dove logo/app icon.
-    static let cloudyBlue = Color(hex: "525D69")
+    static let cloudyBlue      = Color(hex: "525D69")
+    static let cloudyBlueMid   = Color(hex: "828A93")  // cloudyBlue blended 28% toward white
+    static let cloudyBlueLight = Color(hex: "A8AEB4")  // cloudyBlue blended 50% toward white
 
     // MARK: - Session / prayer gradients
     static var sessionBackground: LinearGradient {
         LinearGradient(
             colors: [navy, navyMid, navyDeep],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    /// Same diagonal 3-stop structure as sessionBackground, but in the
+    /// lighter cloudyBlue family, so starting a session is a visible
+    /// transition from this into the much darker sessionBackground.
+    static var cloudyBackground: LinearGradient {
+        LinearGradient(
+            colors: [cloudyBlueLight, cloudyBlueMid, cloudyBlue],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )

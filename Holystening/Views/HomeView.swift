@@ -28,7 +28,7 @@ struct HomeView: View {
                 if vm.isSessionActive {
                     AppColors.sessionBackground
                 } else if colorScheme == .dark {
-                    AppColors.cloudyBlue
+                    AppColors.cloudyBackground
                 } else {
                     Color.white
                 }
