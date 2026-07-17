@@ -26,6 +26,10 @@ enum AppColors {
     // MARK: - Bible accent
     static let bibleGold = Color(hex: "C9A84C")
 
+    // MARK: - Logo-derived tones
+    /// Sampled from the cloudy sky background of the dove logo/app icon.
+    static let cloudyBlue = Color(hex: "525D69")
+
     // MARK: - Session / prayer gradients
     static var sessionBackground: LinearGradient {
         LinearGradient(

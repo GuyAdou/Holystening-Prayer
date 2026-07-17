@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var vm: PrayerViewModel
     @AppStorage("autoStartSession") private var autoStartSession = false
     @State private var showBible = false
@@ -14,12 +15,20 @@ struct HomeView: View {
 
     private let idleDelay: TimeInterval = AppConfig.idleTimeout
 
+    /// True when the background is dark (active session, or idle in dark mode)
+    /// and foreground content should be light/white instead of navy.
+    private var useLightForeground: Bool {
+        vm.isSessionActive || colorScheme == .dark
+    }
+
     var body: some View {
         ZStack {
             // Background
             Group {
                 if vm.isSessionActive {
                     AppColors.sessionBackground
+                } else if colorScheme == .dark {
+                    AppColors.cloudyBlue
                 } else {
                     Color.white
                 }
@@ -41,7 +50,7 @@ struct HomeView: View {
 
                 Text("Prayer")
                     .font(.system(size: 42, weight: .thin, design: .serif))
-                    .foregroundStyle(vm.isSessionActive ? .white : AppColors.navy)
+                    .foregroundStyle(useLightForeground ? .white : AppColors.navy)
 
                 // Play / Pause button + Stop button
                 Button(action: vm.togglePlayPause) {
@@ -129,7 +138,7 @@ struct HomeView: View {
                             .foregroundStyle(
                                 vm.isLooping
                                     ? AppColors.teal
-                                    : (vm.isSessionActive ? .white.opacity(0.35) : AppColors.navy.opacity(0.35))
+                                    : (useLightForeground ? .white.opacity(0.35) : AppColors.navy.opacity(0.35))
                             )
                             .padding(10)
                             .background(
@@ -180,7 +189,7 @@ struct HomeView: View {
                         Button { showSettings = true } label: {
                             Image(systemName: "gearshape")
                                 .font(.system(size: 18, weight: .medium))
-                                .foregroundStyle(AppColors.navy.opacity(0.7))
+                                .foregroundStyle((useLightForeground ? Color.white : AppColors.navy).opacity(0.7))
                         }
                         .accessibilityIdentifier("settings-gear-button")
                         .padding(.trailing, 20)
@@ -200,14 +209,14 @@ struct HomeView: View {
                         Button { showBible = true } label: {
                             Image(systemName: "book.fill")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundStyle(vm.isSessionActive ? Color.white : AppColors.navy)
+                                .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
                         Button { showNotes = true } label: {
                             Image(systemName: "note.text")
                                 .font(.system(size: 20, weight: .medium))
-                                .foregroundStyle(vm.isSessionActive ? Color.white : AppColors.navy)
+                                .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("notes-pill-button")
