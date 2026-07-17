@@ -17,9 +17,6 @@ struct NoteEditorView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
-                .onChange(of: note.title) { _, _ in
-                    note.updatedAt = .now
-                }
 
             Divider().padding(.horizontal, 20)
 
@@ -29,9 +26,6 @@ struct NoteEditorView: View {
                 .padding(.vertical, 8)
                 .focused($bodyFocused)
                 .accessibilityIdentifier("note-body-editor")
-                .onChange(of: note.content) { _, _ in
-                    note.updatedAt = .now
-                }
         }
         .onChange(of: titleFocused) { _, focused in
             if focused { hasUnsavedChanges = true }
@@ -78,6 +72,7 @@ struct NoteEditorView: View {
         if note.title.isEmpty && note.content.isEmpty {
             modelContext.delete(note)
         } else {
+            note.updatedAt = .now
             try? modelContext.save()
         }
     }
