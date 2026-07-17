@@ -29,7 +29,8 @@ enum AppColors {
     // MARK: - Logo-derived tones
     /// Sampled from the cloudy sky background of the dove logo/app icon.
     static let cloudyBlue      = Color(hex: "525D69")
-    static let cloudyBlueMid   = Color(hex: "828A93")  // cloudyBlue blended 28% toward white
+    /// cloudyBlueMid base, tilted warm toward the dove's golden-white glow.
+    static let cloudyBlueMid   = Color(hex: "989785")
     static let cloudyBlueLight = Color(hex: "A8AEB4")  // cloudyBlue blended 50% toward white
 
     // MARK: - Session / prayer gradients
