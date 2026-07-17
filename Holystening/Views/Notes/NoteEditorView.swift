@@ -34,10 +34,10 @@ struct NoteEditorView: View {
                 }
         }
         .onChange(of: titleFocused) { _, focused in
-            if focused { withAnimation { hasUnsavedChanges = true } }
+            if focused { hasUnsavedChanges = true }
         }
         .onChange(of: bodyFocused) { _, focused in
-            if focused { withAnimation { hasUnsavedChanges = true } }
+            if focused { hasUnsavedChanges = true }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -48,6 +48,7 @@ struct NoteEditorView: View {
                 }
                 .buttonStyle(.glassProminent)
                 .tint(hasUnsavedChanges ? AppColors.gold : Color(uiColor: .systemGray3))
+                .animation(.default, value: hasUnsavedChanges)
                 .id(hasUnsavedChanges)
                 .accessibilityIdentifier("note-done-button")
                 .accessibilityValue(hasUnsavedChanges ? "unsaved" : "saved")
@@ -68,7 +69,7 @@ struct NoteEditorView: View {
         titleFocused = false
         bodyFocused = false
         saveOrDiscard()
-        withAnimation { hasUnsavedChanges = false }
+        hasUnsavedChanges = false
     }
 
     /// Deletes the note instead of saving it if the user leaves both title
