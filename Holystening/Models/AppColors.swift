@@ -28,7 +28,7 @@ enum AppColors {
 
     // MARK: - Logo-derived tones
     /// Sampled from the cloudy sky background of the dove logo/app icon.
-    static let cloudyBlue      = Color(hex: "525D69")
+    static let cloudyBlue      = Color(hex: "0c2746")
     /// cloudyBlueMid base, tilted warm toward the dove's golden-white glow.
     static let cloudyBlueMid   = Color(hex: "989785")
     static let cloudyBlueLight = Color(hex: "A8AEB4")  // cloudyBlue blended 50% toward white
@@ -47,7 +47,7 @@ enum AppColors {
     /// transition from this into the much darker sessionBackground.
     static var cloudyBackground: LinearGradient {
         LinearGradient(
-            colors: [cloudyBlueLight, cloudyBlueMid, cloudyBlue],
+            colors: [cloudyBlue,cloudyBlueMid],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
