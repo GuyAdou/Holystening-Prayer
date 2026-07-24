@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var pulseAnimation = false
     @State private var isIdle = false
     @State private var idleTimer: Timer?
+    @Namespace private var pillNamespace
 
     private let idleDelay: TimeInterval = AppConfig.idleTimeout
 
@@ -213,6 +214,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
+                        .matchedTransitionSource(id: "bible", in: pillNamespace)
                         Button { showNotes = true } label: {
                             Image(systemName: "note.text")
                                 .font(.system(size: 20, weight: .medium))
@@ -220,6 +222,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("notes-pill-button")
+                        .matchedTransitionSource(id: "notes", in: pillNamespace)
                     }
                     .padding(.vertical, 6)
                     .glassEffect(in: Capsule())
@@ -231,11 +234,17 @@ struct HomeView: View {
         }
         .animation(.spring(duration: 0.4), value: vm.isSessionActive)
         .sheet(isPresented: $showSettings) { SettingsView(settings: $vm.settings) }
-        .fullScreenCover(isPresented: $showBible) { BibleView() }
+        .fullScreenCover(isPresented: $showBible) {
+            BibleView()
+                .navigationTransition(.zoom(sourceID: "bible", in: pillNamespace))
+        }
         .onChange(of: showBible) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }
-        .fullScreenCover(isPresented: $showNotes) { NotesView() }
+        .fullScreenCover(isPresented: $showNotes) {
+            NotesView()
+                .navigationTransition(.zoom(sourceID: "notes", in: pillNamespace))
+        }
         .onChange(of: showNotes) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }
