@@ -214,7 +214,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
-                        .matchedTransitionSource(id: "bible", in: pillNamespace)
+                        .matchedTransitionSource(id: "bible", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                         Button { showNotes = true } label: {
                             Image(systemName: "note.text")
                                 .font(.system(size: 20, weight: .medium))
@@ -222,7 +222,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("notes-pill-button")
-                        .matchedTransitionSource(id: "notes", in: pillNamespace)
+                        .matchedTransitionSource(id: "notes", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                     }
                     .padding(.vertical, 6)
                     .glassEffect(in: Capsule())
