@@ -231,11 +231,11 @@ struct HomeView: View {
         }
         .animation(.spring(duration: 0.4), value: vm.isSessionActive)
         .sheet(isPresented: $showSettings) { SettingsView(settings: $vm.settings) }
-        .sheet(isPresented: $showBible) { BibleView() }
+        .fullScreenCover(isPresented: $showBible) { BibleView() }
         .onChange(of: showBible) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }
-        .sheet(isPresented: $showNotes) { NotesView() }
+        .fullScreenCover(isPresented: $showNotes) { NotesView() }
         .onChange(of: showNotes) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }
