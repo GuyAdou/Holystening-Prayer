@@ -12,7 +12,6 @@ struct HomeView: View {
     @State private var pulseAnimation = false
     @State private var isIdle = false
     @State private var idleTimer: Timer?
-    @Namespace private var pillNamespace
 
     private let idleDelay: TimeInterval = AppConfig.idleTimeout
 
@@ -214,8 +213,6 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
-                        .compositingGroup()
-                        .matchedTransitionSource(id: "bible", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                         Button { showNotes = true } label: {
                             Image(systemName: "note.text")
                                 .font(.system(size: 20, weight: .medium))
@@ -223,8 +220,6 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("notes-pill-button")
-                        .compositingGroup()
-                        .matchedTransitionSource(id: "notes", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                     }
                     .padding(.vertical, 6)
                     .glassEffect(in: Capsule())
@@ -236,17 +231,11 @@ struct HomeView: View {
         }
         .animation(.spring(duration: 0.4), value: vm.isSessionActive)
         .sheet(isPresented: $showSettings) { SettingsView(settings: $vm.settings) }
-        .fullScreenCover(isPresented: $showBible) {
-            BibleView()
-                .navigationTransition(.zoom(sourceID: "bible", in: pillNamespace))
-        }
+        .fullScreenCover(isPresented: $showBible) { BibleView() }
         .onChange(of: showBible) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }
-        .fullScreenCover(isPresented: $showNotes) {
-            NotesView()
-                .navigationTransition(.zoom(sourceID: "notes", in: pillNamespace))
-        }
+        .fullScreenCover(isPresented: $showNotes) { NotesView() }
         .onChange(of: showNotes) { _, isShowing in
             if !isShowing { resetIdleTimer() }
         }

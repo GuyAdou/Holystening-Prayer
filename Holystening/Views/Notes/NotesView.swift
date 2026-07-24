@@ -43,12 +43,18 @@ struct NotesView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     CloseButton(identifier: "notes-close-button") { dismiss() }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: addNote) {
-                        Image(systemName: "square.and.pencil")
-                    }
-                    .accessibilityIdentifier("notes-new-button")
+            }
+            .overlay(alignment: .bottomTrailing) {
+                Button(action: addNote) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 20, weight: .medium))
+                        .frame(width: 56, height: 56)
                 }
+                .buttonStyle(.glassProminent)
+                .tint(AppColors.gold)
+                .padding(.trailing, 20)
+                .padding(.bottom, 24)
+                .accessibilityIdentifier("notes-new-button")
             }
         }
     }
