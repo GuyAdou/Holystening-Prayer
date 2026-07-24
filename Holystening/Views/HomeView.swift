@@ -214,6 +214,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
+                        .compositingGroup()
                         .matchedTransitionSource(id: "bible", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                         Button { showNotes = true } label: {
                             Image(systemName: "note.text")
@@ -222,6 +223,7 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("notes-pill-button")
+                        .compositingGroup()
                         .matchedTransitionSource(id: "notes", in: pillNamespace) { $0.clipShape(.rect(cornerRadius: 25)) }
                     }
                     .padding(.vertical, 6)
