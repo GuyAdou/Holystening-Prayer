@@ -10,22 +10,9 @@ struct NoteEditorView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TextField("Title", text: $note.title, axis: .vertical)
-                .font(.title.bold())
-                .focused($titleFocused)
-                .accessibilityIdentifier("note-title-field")
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
-
+            NoteTitleField(text: $note.title, isFocused: $titleFocused)
             Divider().padding(.horizontal, 20)
-
-            TextEditor(text: $note.content)
-                .font(.body)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .focused($bodyFocused)
-                .accessibilityIdentifier("note-body-editor")
+            NoteBodyEditor(text: $note.content, isFocused: $bodyFocused)
         }
         .onChange(of: titleFocused) { _, focused in
             if focused { hasUnsavedChanges = true }
@@ -36,16 +23,7 @@ struct NoteEditorView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(action: saveNote) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
-                }
-                .buttonStyle(.glassProminent)
-                .tint(hasUnsavedChanges ? AppColors.gold : Color(uiColor: .systemGray3))
-                .animation(.default, value: hasUnsavedChanges)
-                .id(hasUnsavedChanges)
-                .accessibilityIdentifier("note-done-button")
-                .accessibilityValue(hasUnsavedChanges ? "unsaved" : "saved")
+                NoteSaveButton(hasUnsavedChanges: hasUnsavedChanges, action: saveNote)
             }
         }
         .onAppear {
