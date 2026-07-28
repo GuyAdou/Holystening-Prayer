@@ -50,8 +50,7 @@ struct NotesView: View {
                         .font(.system(size: 20, weight: .medium))
                         .frame(width: 56, height: 56)
                 }
-                .buttonStyle(.glassProminent)
-                .tint(AppColors.gold)
+                .buttonStyle(.glass)
                 .padding(.trailing, 20)
                 .padding(.bottom, 24)
                 .accessibilityIdentifier("notes-new-button")
