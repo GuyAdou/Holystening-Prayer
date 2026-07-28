@@ -7,6 +7,15 @@ struct NotesView: View {
     @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
 
     @State private var path: [Note] = []
+    @State private var searchText = ""
+
+    private var filteredNotes: [Note] {
+        guard !searchText.isEmpty else { return notes }
+        return notes.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+                || $0.content.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -17,15 +26,17 @@ struct NotesView: View {
                         systemImage: "note.text",
                         description: Text("Tap + to write your first note")
                     )
+                } else if filteredNotes.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
                 } else {
                     List {
-                        ForEach(notes) { note in
+                        ForEach(filteredNotes) { note in
                             NavigationLink(value: note) {
                                 NoteRow(note: note)
                             }
                         }
                         .onDelete { offsets in
-                            let toDelete = offsets.map { notes[$0] }
+                            let toDelete = offsets.map { filteredNotes[$0] }
                             if let current = path.last,
                                toDelete.contains(where: { $0.persistentModelID == current.persistentModelID }) {
                                 path.removeLast()
@@ -43,18 +54,17 @@ struct NotesView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     CloseButton(identifier: "notes-close-button") { dismiss() }
                 }
-            }
-            .overlay(alignment: .bottomTrailing) {
-                Button(action: addNote) {
-                    Image(systemName: "square.and.pencil")
-                        .font(.system(size: 20, weight: .medium))
-                        .frame(width: 56, height: 56)
+                DefaultToolbarItem(kind: .search, placement: .bottomBar)
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+                ToolbarItem(placement: .bottomBar) {
+                    Button(action: addNote) {
+                        Image(systemName: "square.and.pencil")
+                    }
+                    .buttonStyle(.glass)
+                    .accessibilityIdentifier("notes-new-button")
                 }
-                .buttonStyle(.glass)
-                .padding(.trailing, 20)
-                .padding(.bottom, 24)
-                .accessibilityIdentifier("notes-new-button")
             }
+            .searchable(text: $searchText)
         }
     }
 
