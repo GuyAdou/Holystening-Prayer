@@ -2,6 +2,11 @@ import Foundation
 
 enum AppConfig {
 
+    // MARK: - Feature Flags
+    /// Notes is fully implemented but archived (hidden from the UI) for now.
+    /// Nothing is deleted — flip this back to true to re-enable it.
+    static let notesFeatureEnabled: Bool = false
+
     // MARK: - Audio
     /// All available prayer audio tracks. Add new tracks by appending to this array.
     static let tracks: [PrayerTrack] = [

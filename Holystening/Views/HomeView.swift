@@ -213,16 +213,18 @@ struct HomeView: View {
                                 .frame(width: 50, height: 50)
                         }
                         .accessibilityIdentifier("bible-pill-button")
-                        Button { showNotes = true } label: {
-                            Image(systemName: "note.text")
-                                .font(.system(size: 20, weight: .medium))
-                                .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
-                                .frame(width: 50, height: 50)
+                        if AppConfig.notesFeatureEnabled {
+                            Button { showNotes = true } label: {
+                                Image(systemName: "note.text")
+                                    .font(.system(size: 20, weight: .medium))
+                                    .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
+                                    .frame(width: 50, height: 50)
+                            }
+                            .accessibilityIdentifier("notes-pill-button")
                         }
-                        .accessibilityIdentifier("notes-pill-button")
                     }
-                    .padding(.vertical, 6)
-                    .glassEffect(in: Capsule())
+                    .padding(AppConfig.notesFeatureEnabled ? 6 : 0)
+                    .glassEffect(in: AppConfig.notesFeatureEnabled ? AnyShape(Capsule()) : AnyShape(Circle()))
                     .padding(.trailing, 20)
                     .padding(.bottom, 24)
                 }
