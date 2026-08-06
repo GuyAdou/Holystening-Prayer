@@ -14,6 +14,8 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private var fadeTimer: Timer?
     private var wasPlayingBeforeInterruption = false
     private var currentTrackName: String = ""
+    private var isLooping = false
+    private var isFadingOutNearEnd = false
     var onPlaybackFinished: (() -> Void)?
     var onStopRequested: (() -> Void)?
 
@@ -57,6 +59,8 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     func play(loop: Bool = false) {
+        isLooping = loop
+        isFadingOutNearEnd = false
         player?.numberOfLoops = loop ? -1 : 0
         player?.volume = AppConfig.audioFadeInStartVolume
         player?.play()
@@ -84,6 +88,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     func setLooping(_ loop: Bool) {
+        isLooping = loop
         player?.numberOfLoops = loop ? -1 : 0
     }
 
@@ -243,7 +248,19 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private func startProgressTimer() {
         progressTimer = Timer.scheduledTimer(withTimeInterval: AppConfig.audioProgressInterval, repeats: true) { [weak self] _ in
             guard let self, let player = self.player else { return }
-            self.progress = player.currentTime / max(player.duration, 1)
+            let duration = max(player.duration, 1)
+            self.progress = player.currentTime / duration
+
+            // Only fades the true end of a non-looping playthrough — loop
+            // boundaries are left completely untouched, no fade either way.
+            if !self.isLooping && !self.isFadingOutNearEnd {
+                let remaining = duration - player.currentTime
+                if remaining <= AppConfig.audioEndFadeDuration && remaining > 0 {
+                    player.setVolume(0.0, fadeDuration: remaining)
+                    self.isFadingOutNearEnd = true
+                }
+            }
+
             self.updateNowPlayingElapsed()
         }
     }

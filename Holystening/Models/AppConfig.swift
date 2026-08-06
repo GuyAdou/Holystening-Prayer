@@ -23,11 +23,16 @@ enum AppConfig {
     static let audioFadeOutDuration: TimeInterval = 2.0
 
     /// Duration in seconds to fade in audio when a prayer session starts.
-    static let audioFadeInDuration: TimeInterval = 35.0
+    static let audioFadeInDuration: TimeInterval = 20.0
 
     /// Starting volume for the fade-in — audible immediately so playback
     /// doesn't look stalled, but still noticeably softer than full volume.
-    static let audioFadeInStartVolume: Float = 0.35
+    static let audioFadeInStartVolume: Float = 0.4
+
+    /// Duration in seconds to fade the track out as it nears its true end.
+    /// Only applies when the track is not looping — loop boundaries stay
+    /// completely untouched, with no fade in either direction.
+    static let audioEndFadeDuration: TimeInterval = 30.0
 
     /// Whether the track loops indefinitely by default.
     static let defaultLoopEnabled: Bool = false
