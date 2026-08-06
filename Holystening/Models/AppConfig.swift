@@ -22,6 +22,9 @@ enum AppConfig {
     /// Duration in seconds to fade out audio when the user stops the session.
     static let audioFadeOutDuration: TimeInterval = 2.0
 
+    /// Duration in seconds to fade in audio when a prayer session starts.
+    static let audioFadeInDuration: TimeInterval = 35.0
+
     /// Whether the track loops indefinitely by default.
     static let defaultLoopEnabled: Bool = false
 

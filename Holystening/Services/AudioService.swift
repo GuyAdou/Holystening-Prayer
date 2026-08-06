@@ -58,7 +58,9 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func play(loop: Bool = false) {
         player?.numberOfLoops = loop ? -1 : 0
+        player?.volume = 0
         player?.play()
+        player?.setVolume(1.0, fadeDuration: AppConfig.audioFadeInDuration)
         isPlaying = true
         isPaused = false
         startProgressTimer()
