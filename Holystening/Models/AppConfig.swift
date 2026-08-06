@@ -10,7 +10,7 @@ enum AppConfig {
     // MARK: - Audio
     /// All available prayer audio tracks. Add new tracks by appending to this array.
     static let tracks: [PrayerTrack] = [
-        PrayerTrack(name: "Instrumental Prayer", fileName: "Instrumental-music-1", fileExtension: "mp3"),
+        PrayerTrack(name: "Harmony of Heaven", fileName: "Harmony-of-Heaven", fileExtension: "mp3"),
     ]
 
     /// Default track played when the app launches for the first time.
