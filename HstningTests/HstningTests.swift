@@ -52,6 +52,18 @@ struct PrayerViewModelTests {
         withExtendedLifetime(cancellable) {}
     }
 
+    // MARK: - Duration label available before the first session
+
+    // The duration label reads vm.audio.duration, which was previously only
+    // populated by audio.load(track:) inside startSession() — so it showed
+    // "0:00" until the user tapped play once. init() must preload it.
+    @Test func durationIsAvailableBeforeSessionStarts() async throws {
+        let vm = PrayerViewModel()
+
+        #expect(vm.isSessionActive == false)
+        #expect(vm.audio.duration > 0)
+    }
+
     // MARK: - togglePlayPause() dispatch
 
     @Test func togglePlayPause_whenSessionInactive_startsSession() async throws {

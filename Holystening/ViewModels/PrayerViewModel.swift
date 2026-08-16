@@ -28,6 +28,19 @@ class PrayerViewModel: ObservableObject {
         audio.onStopRequested = { [weak self] in
             self?.stopSession()
         }
+
+        // Preload so the duration label shows the real track length from
+        // the get-go, not just after the first session starts.
+        audio.load(track: currentTrack)
+
+        $settings
+            .map(\.selectedTrackIndex)
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self, !self.isSessionActive else { return }
+                self.audio.load(track: self.currentTrack)
+            }
+            .store(in: &cancellables)
     }
 
     var currentTrack: PrayerTrack {
