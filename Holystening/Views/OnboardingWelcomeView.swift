@@ -23,7 +23,7 @@ struct OnboardingWelcomeView: View {
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
     @ViewBuilder private var pageBackground: some View {
         if colorScheme == .dark {
-            AppColors.cloudyBackground
+            AppColors.offBlack
         } else {
             Color.white
         }
