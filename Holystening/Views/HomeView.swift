@@ -132,8 +132,8 @@ struct HomeView: View {
                     .opacity(vm.isSessionActive ? 1 : 0.3)
 
                     Text(vm.audio.formattedDuration)
-                        .font(.caption)
-                        .foregroundStyle((useLightForeground ? Color.white : AppColors.navy).opacity(0.5))
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle((useLightForeground ? Color.white : AppColors.navy).opacity(0.85))
                         .opacity(vm.isSessionActive ? 1 : 0.3)
 
                     // Loop toggle

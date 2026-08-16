@@ -9,11 +9,12 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var progress: Double = 0.0
     @Published var duration: Double = 0.0
 
+    /// Rounds up to the nearest full minute for a clean display value
+    /// (e.g. 4:57 shows as "5:00") — doesn't affect actual playback,
+    /// fade, or crossfade timing, which all use the real `duration`.
     var formattedDuration: String {
-        let totalSeconds = Int(duration.rounded())
-        let minutes = totalSeconds / 60
-        let seconds = totalSeconds % 60
-        return String(format: "%d:%02d", minutes, seconds)
+        let roundedMinutes = Int((duration / 60).rounded(.up))
+        return String(format: "%d:00", roundedMinutes)
     }
 
     private var player: AVAudioPlayer?
@@ -113,10 +114,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             player.setVolume(0.0, fadeDuration: remaining)
             nextPlayer.play()
             nextPlayer.setVolume(1.0, fadeDuration: remaining)
-            crossfadeTimer?.invalidate()
-            crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
-                self?.promoteNextPlayer()
-            }
+            scheduleCrossfadeTimer(after: remaining)
         }
         isPlaying = true
         isPaused = false
@@ -281,9 +279,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
                     player.setVolume(0.0, fadeDuration: remaining)
                     nextPlayer.play()
                     nextPlayer.setVolume(1.0, fadeDuration: remaining)
-                    crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
-                        self?.promoteNextPlayer()
-                    }
+                    scheduleCrossfadeTimer(after: remaining)
                 }
                 DispatchQueue.main.async {
                     self.isPlaying = true
@@ -306,6 +302,10 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         // nextPlayer.stop() during promoteNextPlayer() would otherwise race
         // this delegate call for the outgoing player and end the session mid-loop.
         guard player === self.player else { return }
+        // The outgoing player can reach its own natural end a beat before the
+        // crossfade timer promotes nextPlayer — nextPlayer is already playing,
+        // so this isn't a real end of session; let promoteNextPlayer() finish the swap.
+        guard !isCrossfading else { return }
         DispatchQueue.main.async {
             self.isPlaying = false
             self.isPaused = false
@@ -371,10 +371,21 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             return
         }
 
+        scheduleCrossfadeTimer(after: remaining)
+    }
+
+    /// `.common` run-loop mode so this isn't delayed by scroll/animation
+    /// tracking — a delay here would let the outgoing player reach its own
+    /// natural end before promotion, which the identity + isCrossfading
+    /// guards in audioPlayerDidFinishPlaying(_:) handle, but tighter timing
+    /// means less time playing silence-adjacent audio from a stale player.
+    private func scheduleCrossfadeTimer(after interval: TimeInterval) {
         crossfadeTimer?.invalidate()
-        crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+        let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
             self?.promoteNextPlayer()
         }
+        RunLoop.main.add(timer, forMode: .common)
+        crossfadeTimer = timer
     }
 
     private func promoteNextPlayer() {
