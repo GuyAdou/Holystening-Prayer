@@ -9,6 +9,13 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published var progress: Double = 0.0
     @Published var duration: Double = 0.0
 
+    var formattedDuration: String {
+        let totalSeconds = Int(duration.rounded())
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+
     private var player: AVAudioPlayer?
     private var progressTimer: Timer?
     private var fadeTimer: Timer?
