@@ -39,7 +39,7 @@ enum AppConfig {
     /// Duration in seconds of the crossfade between the end of one
     /// playthrough and the start of the next when looping, so the loop
     /// point is inaudible.
-    static let audioCrossfadeDuration: TimeInterval = 20.0
+    static let audioCrossfadeDuration: TimeInterval = 30.0
 
     /// Minimum track duration required to use the crossfade loop. Shorter
     /// tracks fall back to a plain seamless loop (native `numberOfLoops`)
