@@ -21,7 +21,13 @@ struct OnboardingWelcomeView: View {
     @State private var ctaAreaHeight: CGFloat = 100
 
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
-    private var pageBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
+    @ViewBuilder private var pageBackground: some View {
+        if colorScheme == .dark {
+            AppColors.cloudyBackground
+        } else {
+            Color.white
+        }
+    }
 
     var body: some View {
         GeometryReader { geo in

@@ -9,7 +9,13 @@ struct OnboardingSilenceView: View {
     @State private var ctaAreaHeight: CGFloat = 80
 
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
-    private var pageBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
+    @ViewBuilder private var pageBackground: some View {
+        if colorScheme == .dark {
+            AppColors.cloudyBackground
+        } else {
+            Color.white
+        }
+    }
 
     private let steps: [(title: String, desc: String)] = [
         ("Open Settings",  AppConfig.Onboarding.s2Step1Desc),
