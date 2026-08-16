@@ -58,7 +58,7 @@ struct OnboardingCongratsView: View {
                         .foregroundStyle(AppColors.navy)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
-                        .background(AppColors.ctaButton, in: Capsule())
+                        .background(AppColors.gold, in: Capsule())
                 }
                 .buttonStyle(OnboardingCTAButtonStyle())
                 .padding(.horizontal, 32)

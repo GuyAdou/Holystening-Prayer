@@ -112,7 +112,7 @@ struct OnboardingWelcomeView: View {
                             .foregroundStyle(AppColors.navy)
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
-                            .background(AppColors.ctaButton, in: Capsule())
+                            .background(AppColors.gold, in: Capsule())
                     }
                     .buttonStyle(OnboardingCTAButtonStyle())
                 }
@@ -131,11 +131,6 @@ struct OnboardingCTAButtonStyle: ButtonStyle {
         configuration.label
             .opacity(configuration.isPressed ? 0.78 : 1)
             .scaleEffect(configuration.isPressed ? 0.974 : 1)
-            .shadow(
-                color: AppColors.ctaButtonShadow.opacity(configuration.isPressed ? 0.2 : 0.5),
-                radius: configuration.isPressed ? 5 : 14,
-                x: 0, y: configuration.isPressed ? 2 : 8
-            )
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
     }
 }

@@ -51,11 +51,7 @@ enum AppColors {
     /// transition from this into the much darker sessionBackground.
     static var cloudyBackground: LinearGradient {
         LinearGradient(
-            gradient: Gradient(stops: [
-                .init(color: cloudyBlue, location: 0.0),
-                .init(color: cloudyBlue, location: 0.55),
-                .init(color: cloudyBlueMid, location: 1.0),
-            ]),
+            colors: [cloudyBlue, cloudyBlueMid],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
