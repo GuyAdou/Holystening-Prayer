@@ -76,13 +76,13 @@ struct HomeView: View {
                             )
 
                         let icon = !vm.isSessionActive ? "play.fill"
-                            : vm.isPaused ? "play.fill"
+                            : vm.audio.isPaused ? "play.fill"
                             : "pause.fill"
 
                         Image(systemName: icon)
                             .font(.system(size: 40, weight: .medium))
                             .foregroundStyle(AppColors.navy)
-                            .offset(x: (!vm.isSessionActive || vm.isPaused) ? 4 : 0)
+                            .offset(x: (!vm.isSessionActive || vm.audio.isPaused) ? 4 : 0)
                     }
                 }
                 .accessibilityIdentifier("prayer-play-button")

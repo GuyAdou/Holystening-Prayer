@@ -5,7 +5,6 @@ import UIKit
 @MainActor
 class PrayerViewModel: ObservableObject {
     @Published var isSessionActive = false
-    @Published var isPaused = false
     @Published var settings = AppSettings()
     @Published var isLooping: Bool = AppConfig.defaultLoopEnabled
 
@@ -38,17 +37,14 @@ class PrayerViewModel: ObservableObject {
     }
 
     func pauseSession() {
-        isPaused = true
         audio.pause()
     }
 
     func resumeSession() {
-        isPaused = false
         audio.resume()
     }
 
     func stopSession() {
-        isPaused = false
         audio.stop()
         focus.disable()
         UIApplication.shared.isIdleTimerDisabled = false

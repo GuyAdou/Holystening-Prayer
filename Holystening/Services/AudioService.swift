@@ -207,7 +207,10 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         case .began:
             wasPlayingBeforeInterruption = isPlaying
             stopProgressTimer()
-            DispatchQueue.main.async { self.isPlaying = false }
+            DispatchQueue.main.async {
+                self.isPlaying = false
+                self.isPaused = true
+            }
 
         case .ended:
             guard wasPlayingBeforeInterruption else { return }
@@ -218,7 +221,10 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             do {
                 try AVAudioSession.sharedInstance().setActive(true)
                 player?.play()
-                DispatchQueue.main.async { self.isPlaying = true }
+                DispatchQueue.main.async {
+                    self.isPlaying = true
+                    self.isPaused = false
+                }
                 startProgressTimer()
                 self.updateNowPlayingRate(1)
             } catch {
