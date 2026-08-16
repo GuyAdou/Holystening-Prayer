@@ -11,7 +11,17 @@ class PrayerViewModel: ObservableObject {
     let audio = AudioService()
     let focus = FocusService()
 
+    private var cancellables = Set<AnyCancellable>()
+
     init() {
+        // audio is a plain property, not @Published — views observing only
+        // `vm` (e.g. HomeView via @EnvironmentObject) never re-render when
+        // audio's own @Published properties (isPaused/isPlaying/progress)
+        // change unless we forward that notification ourselves.
+        audio.objectWillChange
+            .sink { [weak self] _ in self?.objectWillChange.send() }
+            .store(in: &cancellables)
+
         audio.onPlaybackFinished = { [weak self] in
             self?.handlePlaybackFinished()
         }
