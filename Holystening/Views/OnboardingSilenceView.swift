@@ -9,6 +9,9 @@ struct OnboardingSilenceView: View {
     @State private var ctaAreaHeight: CGFloat = 80
 
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
+    private var secondaryTextColor: Color {
+        colorScheme == .dark ? AppColors.cloudyBlueMid : AppColors.navy.opacity(0.56)
+    }
     @ViewBuilder private var pageBackground: some View {
         if colorScheme == .dark {
             AppColors.cloudyBackground
@@ -16,6 +19,7 @@ struct OnboardingSilenceView: View {
             Color.white
         }
     }
+    private var ctaBarBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
 
     private let steps: [(title: String, desc: String)] = [
         ("Open Settings",  AppConfig.Onboarding.s2Step1Desc),
@@ -51,7 +55,7 @@ struct OnboardingSilenceView: View {
                     // Body
                     Text(AppConfig.Onboarding.s2Body)
                         .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                        .foregroundStyle(textColor.opacity(0.56))
+                        .foregroundStyle(secondaryTextColor)
                         .lineSpacing(8)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.bottom, 32)
@@ -74,7 +78,7 @@ struct OnboardingSilenceView: View {
 
                                     Text(step.desc)
                                         .font(.system(size: AppConfig.Onboarding.stepNoteSize, weight: .regular))
-                                        .foregroundStyle(textColor.opacity(0.72))
+                                        .foregroundStyle(secondaryTextColor)
                                         .lineSpacing(3)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -122,7 +126,7 @@ struct OnboardingSilenceView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 8)
                 .padding(.bottom, 16)
-                .background(pageBackground)
+                .background(ctaBarBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { ctaAreaHeight = $0 }
             }
         }
