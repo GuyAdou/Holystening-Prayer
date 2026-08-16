@@ -598,9 +598,10 @@ final class OnboardingUITests: AppUITestCase {
         let app = launchOnboarding()
         _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
             .waitForExistence(timeout: 3)
-        for label in ["Pray without distractions", "Bible", "Notes"] {
+        for label in ["Pray without distractions", "Bible"] {
             XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible on Welcome screen")
         }
+        XCTAssertFalse(app.staticTexts["Notes"].exists, "Notes is archived and must not appear on the Welcome screen")
     }
 
     @MainActor

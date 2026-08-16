@@ -2,8 +2,12 @@ import SwiftUI
 
 struct OnboardingCongratsView: View {
     var onContinue: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var ctaAreaHeight: CGFloat = 80
+
+    private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
+    private var pageBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
 
     var body: some View {
         GeometryReader { geo in
@@ -15,7 +19,7 @@ struct OnboardingCongratsView: View {
                     HStack(spacing: 6) {
                         ForEach(0..<3) { i in
                             RoundedRectangle(cornerRadius: 2)
-                                .fill(i == 2 ? Color(hex: "1a1a2e") : Color(hex: "1a1a2e").opacity(0.15))
+                                .fill(i == 2 ? textColor : textColor.opacity(0.15))
                                 .frame(width: i == 2 ? 24 : 4, height: 4)
                         }
                     }
@@ -24,13 +28,13 @@ struct OnboardingCongratsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text(AppConfig.Onboarding.s3Headline)
                             .font(.system(size: AppConfig.Onboarding.headlineSize, weight: .light))
-                            .foregroundStyle(Color(hex: "1a1a2e"))
+                            .foregroundStyle(textColor)
                             .tracking(-0.5)
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text(AppConfig.Onboarding.s3Body)
                             .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                            .foregroundStyle(Color(hex: "1a1a2e").opacity(0.56))
+                            .foregroundStyle(textColor.opacity(0.56))
                             .lineSpacing(11)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -45,7 +49,7 @@ struct OnboardingCongratsView: View {
                 Button(action: onContinue) {
                     Text(AppConfig.Onboarding.s3CTA)
                         .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
-                        .foregroundStyle(Color(hex: "1a1a2e"))
+                        .foregroundStyle(AppColors.navy)
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(AppColors.ctaButton, in: Capsule())
@@ -54,10 +58,10 @@ struct OnboardingCongratsView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 8)
                 .padding(.bottom, 16)
-                .background(Color.white)
+                .background(pageBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { ctaAreaHeight = $0 }
             }
         }
-        .background(Color.white.ignoresSafeArea())
+        .background(pageBackground.ignoresSafeArea())
     }
 }

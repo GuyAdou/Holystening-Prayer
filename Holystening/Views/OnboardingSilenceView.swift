@@ -4,8 +4,12 @@ struct OnboardingSilenceView: View {
     var onContinue: () -> Void
     @State private var hasOpenedSettings = false
     @Environment(\.openURL) private var openURL
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var ctaAreaHeight: CGFloat = 80
+
+    private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
+    private var pageBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
 
     private let steps: [(title: String, desc: String)] = [
         ("Open Settings",  AppConfig.Onboarding.s2Step1Desc),
@@ -24,7 +28,7 @@ struct OnboardingSilenceView: View {
                     HStack(spacing: 6) {
                         ForEach(0..<3) { i in
                             RoundedRectangle(cornerRadius: 2)
-                                .fill(i == 1 ? Color(hex: "1a1a2e") : Color(hex: "1a1a2e").opacity(0.15))
+                                .fill(i == 1 ? textColor : textColor.opacity(0.15))
                                 .frame(width: i == 1 ? 24 : 4, height: 4)
                         }
                     }
@@ -33,7 +37,7 @@ struct OnboardingSilenceView: View {
                     // Headline
                     Text(AppConfig.Onboarding.s2Headline)
                         .font(.system(size: AppConfig.Onboarding.headlineSize, weight: .light))
-                        .foregroundStyle(Color(hex: "1a1a2e"))
+                        .foregroundStyle(textColor)
                         .tracking(-0.4)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.bottom, 12)
@@ -41,7 +45,7 @@ struct OnboardingSilenceView: View {
                     // Body
                     Text(AppConfig.Onboarding.s2Body)
                         .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                        .foregroundStyle(Color(hex: "1a1a2e").opacity(0.56))
+                        .foregroundStyle(textColor.opacity(0.56))
                         .lineSpacing(8)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.bottom, 32)
@@ -52,19 +56,19 @@ struct OnboardingSilenceView: View {
                             HStack(alignment: .top, spacing: 16) {
                                 Text("\(index + 1)")
                                     .font(.system(size: AppConfig.Onboarding.stepNoteSize, weight: .medium))
-                                    .foregroundStyle(Color(hex: "1a1a2e").opacity(0.45))
+                                    .foregroundStyle(textColor.opacity(0.45))
                                     .frame(width: 28, height: 28)
-                                    .background(Circle().stroke(Color(hex: "1a1a2e").opacity(0.2), lineWidth: 1))
+                                    .background(Circle().stroke(textColor.opacity(0.2), lineWidth: 1))
 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(step.title)
                                         .font(.system(size: AppConfig.Onboarding.stepTitleSize, weight: .medium))
-                                        .foregroundStyle(Color(hex: "1a1a2e"))
+                                        .foregroundStyle(textColor)
                                         .fixedSize(horizontal: false, vertical: true)
 
                                     Text(step.desc)
                                         .font(.system(size: AppConfig.Onboarding.stepNoteSize, weight: .regular))
-                                        .foregroundStyle(Color(hex: "1a1a2e").opacity(0.72))
+                                        .foregroundStyle(textColor.opacity(0.72))
                                         .lineSpacing(3)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -73,7 +77,7 @@ struct OnboardingSilenceView: View {
 
                             if index < steps.count - 1 {
                                 Rectangle()
-                                    .fill(Color(hex: "1a1a2e").opacity(0.1))
+                                    .fill(textColor.opacity(0.1))
                                     .frame(width: 1, height: 20)
                                     .padding(.leading, 13.5)
                                     .padding(.vertical, 7)
@@ -103,7 +107,7 @@ struct OnboardingSilenceView: View {
                         Text("→").font(.system(size: 18))
                     }
                     .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
-                    .foregroundStyle(Color(hex: "1a1a2e"))
+                    .foregroundStyle(AppColors.navy)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(AppColors.ctaButton, in: Capsule())
@@ -112,10 +116,10 @@ struct OnboardingSilenceView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 8)
                 .padding(.bottom, 16)
-                .background(Color.white)
+                .background(pageBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { ctaAreaHeight = $0 }
             }
         }
-        .background(Color.white.ignoresSafeArea())
+        .background(pageBackground.ignoresSafeArea())
     }
 }
