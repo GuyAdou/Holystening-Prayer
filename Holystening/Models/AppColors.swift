@@ -8,7 +8,7 @@ enum AppColors {
     static let navyDeep = Color(hex: "0f3460")
     static let teal     = Color(hex: "a8edea")
     static let pink     = Color(hex: "fed6e3")
-    static let gold     = Color(hex: "d4af37")
+    static let gold     = Color(hex: "fed6e3")
 
     // MARK: - CTA & interaction buttons
     static var ctaButton = featureIcon  // primary action buttons (onboarding, fix interruptions)
