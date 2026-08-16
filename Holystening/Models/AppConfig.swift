@@ -30,12 +30,21 @@ enum AppConfig {
     static let audioFadeInStartVolume: Float = 0.4
 
     /// Duration in seconds to fade the track out as it nears its true end.
-    /// Only applies when the track is not looping — loop boundaries stay
-    /// completely untouched, with no fade in either direction.
+    /// Only applies when the track is not looping.
     static let audioEndFadeDuration: TimeInterval = 30.0
 
     /// Whether the track loops indefinitely by default.
     static let defaultLoopEnabled: Bool = false
+
+    /// Duration in seconds of the crossfade between the end of one
+    /// playthrough and the start of the next when looping, so the loop
+    /// point is inaudible.
+    static let audioCrossfadeDuration: TimeInterval = 20.0
+
+    /// Minimum track duration required to use the crossfade loop. Shorter
+    /// tracks fall back to a plain seamless loop (native `numberOfLoops`)
+    /// so the crossfade-out window can't collide with the fade-in window.
+    static let audioCrossfadeMinTrackDuration: TimeInterval = 60.0
 
     // MARK: - Focus
     /// Available Focus modes the user can choose from.

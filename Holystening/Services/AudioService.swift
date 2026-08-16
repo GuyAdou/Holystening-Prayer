@@ -26,6 +26,13 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     var onPlaybackFinished: (() -> Void)?
     var onStopRequested: (() -> Void)?
 
+    // MARK: - Crossfade loop state
+    private var nextPlayer: AVAudioPlayer?
+    private var isCrossfading = false
+    private var crossfadeTimer: Timer?
+    private var currentTrackURL: URL?
+    private var willCrossfade = false
+
     override init() {
         super.init()
         configureAudioSession()
@@ -49,11 +56,16 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func load(track: PrayerTrack) {
         fadeTimer?.invalidate()
         fadeTimer = nil
+        crossfadeTimer?.invalidate()
+        crossfadeTimer = nil
+        nextPlayer = nil
+        isCrossfading = false
         guard let url = Bundle.main.url(forResource: track.fileName, withExtension: track.fileExtension) else {
             print("AudioService: file not found — \(track.fileName).\(track.fileExtension)")
             return
         }
         currentTrackName = track.name
+        currentTrackURL = url
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.delegate = self
@@ -68,7 +80,8 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func play(loop: Bool = false) {
         isLooping = loop
         isFadingOutNearEnd = false
-        player?.numberOfLoops = loop ? -1 : 0
+        willCrossfade = loop && duration >= AppConfig.audioCrossfadeMinTrackDuration
+        player?.numberOfLoops = (loop && !willCrossfade) ? -1 : 0
         player?.volume = AppConfig.audioFadeInStartVolume
         player?.play()
         player?.setVolume(1.0, fadeDuration: AppConfig.audioFadeInDuration)
@@ -80,6 +93,13 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func pause() {
         player?.pause()
+        if isCrossfading {
+            nextPlayer?.pause()
+            crossfadeTimer?.invalidate()
+            crossfadeTimer = nil
+            player?.setVolume(player?.volume ?? 0, fadeDuration: 0)
+            nextPlayer?.setVolume(nextPlayer?.volume ?? 0, fadeDuration: 0)
+        }
         isPlaying = false
         isPaused = true
         stopProgressTimer()
@@ -88,6 +108,16 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func resume() {
         player?.play()
+        if isCrossfading, let player, let nextPlayer {
+            let remaining = max(player.duration - player.currentTime, 0.01)
+            player.setVolume(0.0, fadeDuration: remaining)
+            nextPlayer.play()
+            nextPlayer.setVolume(1.0, fadeDuration: remaining)
+            crossfadeTimer?.invalidate()
+            crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+                self?.promoteNextPlayer()
+            }
+        }
         isPlaying = true
         isPaused = false
         startProgressTimer()
@@ -96,7 +126,8 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
 
     func setLooping(_ loop: Bool) {
         isLooping = loop
-        player?.numberOfLoops = loop ? -1 : 0
+        willCrossfade = loop && duration >= AppConfig.audioCrossfadeMinTrackDuration
+        player?.numberOfLoops = (loop && !willCrossfade) ? -1 : 0
     }
 
     func stop() {
@@ -107,21 +138,33 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
 
     private func fadeOut() {
-        guard let player else { return }
+        crossfadeTimer?.invalidate()
+        crossfadeTimer = nil
+        let players = [player, nextPlayer].compactMap { $0 }
+        guard !players.isEmpty else { return }
         let steps: Double = 20
         let interval = AppConfig.audioFadeOutDuration / steps
-        let volumeStep = player.volume / Float(steps)
+        let volumeSteps = players.map { $0.volume / Float(steps) }
         fadeTimer?.invalidate()
         fadeTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] timer in
-            guard let self, let player = self.player else { timer.invalidate(); return }
-            if player.volume > volumeStep {
-                player.volume -= volumeStep
-            } else {
-                player.stop()
-                player.currentTime = 0
-                player.volume = 1.0
+            guard let self else { timer.invalidate(); return }
+            var stillFading = false
+            for (p, step) in zip(players, volumeSteps) {
+                if p.volume > step {
+                    p.volume -= step
+                    stillFading = true
+                }
+            }
+            if !stillFading {
+                for p in players {
+                    p.stop()
+                    p.currentTime = 0
+                    p.volume = 1.0
+                }
                 self.isPlaying = false
                 self.progress = 0
+                self.isCrossfading = false
+                self.nextPlayer = nil
                 timer.invalidate()
                 self.fadeTimer = nil
             }
@@ -214,6 +257,11 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         case .began:
             wasPlayingBeforeInterruption = isPlaying
             stopProgressTimer()
+            if isCrossfading {
+                crossfadeTimer?.invalidate()
+                crossfadeTimer = nil
+                nextPlayer?.pause()
+            }
             DispatchQueue.main.async {
                 self.isPlaying = false
                 self.isPaused = true
@@ -228,6 +276,15 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             do {
                 try AVAudioSession.sharedInstance().setActive(true)
                 player?.play()
+                if isCrossfading, let player, let nextPlayer {
+                    let remaining = max(player.duration - player.currentTime, 0.01)
+                    player.setVolume(0.0, fadeDuration: remaining)
+                    nextPlayer.play()
+                    nextPlayer.setVolume(1.0, fadeDuration: remaining)
+                    crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+                        self?.promoteNextPlayer()
+                    }
+                }
                 DispatchQueue.main.async {
                     self.isPlaying = true
                     self.isPaused = false
@@ -246,6 +303,9 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     // MARK: - AVAudioPlayerDelegate
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        // nextPlayer.stop() during promoteNextPlayer() would otherwise race
+        // this delegate call for the outgoing player and end the session mid-loop.
+        guard player === self.player else { return }
         DispatchQueue.main.async {
             self.isPlaying = false
             self.isPaused = false
@@ -264,13 +324,20 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             let duration = max(player.duration, 1)
             self.progress = player.currentTime / duration
 
-            // Only fades the true end of a non-looping playthrough — loop
-            // boundaries are left completely untouched, no fade either way.
+            // Only fades the true end of a non-looping playthrough.
             if !self.isLooping && !self.isFadingOutNearEnd {
                 let remaining = duration - player.currentTime
                 if remaining <= AppConfig.audioEndFadeDuration && remaining > 0 {
                     player.setVolume(0.0, fadeDuration: remaining)
                     self.isFadingOutNearEnd = true
+                }
+            }
+
+            // Crossfade into the next playthrough so the loop point is inaudible.
+            if self.isLooping && self.willCrossfade && !self.isCrossfading {
+                let remaining = duration - player.currentTime
+                if remaining <= AppConfig.audioCrossfadeDuration && remaining > 0 {
+                    self.beginCrossfade(remaining: remaining)
                 }
             }
 
@@ -281,5 +348,46 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
     private func stopProgressTimer() {
         progressTimer?.invalidate()
         progressTimer = nil
+    }
+
+    // MARK: - Crossfade loop
+
+    private func beginCrossfade(remaining: TimeInterval) {
+        guard let currentTrackURL, let outgoing = player else { return }
+        isCrossfading = true
+        outgoing.setVolume(0.0, fadeDuration: remaining)
+
+        do {
+            let incoming = try AVAudioPlayer(contentsOf: currentTrackURL)
+            incoming.delegate = self
+            incoming.numberOfLoops = 0
+            incoming.volume = 0.0
+            incoming.play()
+            incoming.setVolume(1.0, fadeDuration: remaining)
+            nextPlayer = incoming
+        } catch {
+            print("AudioService: failed to prepare crossfade player — \(error)")
+            isCrossfading = false
+            return
+        }
+
+        crossfadeTimer?.invalidate()
+        crossfadeTimer = Timer.scheduledTimer(withTimeInterval: remaining, repeats: false) { [weak self] _ in
+            self?.promoteNextPlayer()
+        }
+    }
+
+    private func promoteNextPlayer() {
+        guard let promoted = nextPlayer else { return }
+        // player.stop() does not trigger audioPlayerDidFinishPlaying, so this
+        // doesn't race the delegate — the identity guard there is a second
+        // line of defense for the pause/resume-during-crossfade timing.
+        player?.stop()
+        player = promoted
+        nextPlayer = nil
+        isCrossfading = false
+        isFadingOutNearEnd = false
+        crossfadeTimer = nil
+        updateNowPlayingElapsed()
     }
 }
