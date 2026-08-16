@@ -28,7 +28,7 @@ enum AppColors {
 
     // MARK: - Neutrals
     /// A soft off-black, not pure #000000, for the first onboarding screen.
-    static let offBlack = Color(hex: "0C0C0E")
+    static let offBlack = Color(hex: "010A21")
 
     // MARK: - Logo-derived tones
     /// Sampled from the cloudy sky background of the dove logo/app icon.
