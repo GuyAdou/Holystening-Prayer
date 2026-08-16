@@ -21,11 +21,6 @@ struct OnboardingWelcomeView: View {
     @State private var ctaAreaHeight: CGFloat = 100
 
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
-    /// Secondary/body-tier text — a genuine muted tone in dark mode (reusing
-    /// the gradient's own warm mid-tone) instead of white at reduced opacity.
-    private var secondaryTextColor: Color {
-        colorScheme == .dark ? AppColors.cloudyBlueMid : AppColors.navy.opacity(0.56)
-    }
     @ViewBuilder private var pageBackground: some View {
         if colorScheme == .dark {
             AppColors.cloudyBackground
@@ -33,10 +28,6 @@ struct OnboardingWelcomeView: View {
             Color.white
         }
     }
-    /// Solid fill for the CTA safe-area bar — matches the gradient's own
-    /// darkest stop instead of re-rendering the gradient in a small sliver,
-    /// which would otherwise look like a visibly different color seam.
-    private var ctaBarBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
 
     var body: some View {
         GeometryReader { geo in
@@ -63,7 +54,7 @@ struct OnboardingWelcomeView: View {
 
                         Text(AppConfig.Onboarding.s1Body)
                             .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                            .foregroundStyle(secondaryTextColor)
+                            .foregroundStyle(textColor)
                             .multilineTextAlignment(.center)
                             .lineSpacing(5)
                             .fixedSize(horizontal: false, vertical: true)
@@ -87,7 +78,7 @@ struct OnboardingWelcomeView: View {
 
                                     Text(feature.body)
                                         .font(.system(size: AppConfig.Onboarding.featureRowBodySize, weight: .regular))
-                                        .foregroundStyle(secondaryTextColor)
+                                        .foregroundStyle(textColor)
                                         .lineSpacing(3)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -102,7 +93,7 @@ struct OnboardingWelcomeView: View {
                 .fontDesign(.serif)
                 .padding(.horizontal, 32)
             }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .overlay(alignment: .bottom) {
                 VStack(spacing: 0) {
                     // Step dots — dot 1 active
                     HStack(spacing: 6) {
@@ -128,7 +119,6 @@ struct OnboardingWelcomeView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 8)
                 .padding(.bottom, 16)
-                .background(ctaBarBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { ctaAreaHeight = $0 }
             }
         }

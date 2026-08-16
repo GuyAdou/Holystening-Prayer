@@ -7,9 +7,6 @@ struct OnboardingCongratsView: View {
     @State private var ctaAreaHeight: CGFloat = 80
 
     private var textColor: Color { colorScheme == .dark ? .white : AppColors.navy }
-    private var secondaryTextColor: Color {
-        colorScheme == .dark ? AppColors.cloudyBlueMid : AppColors.navy.opacity(0.56)
-    }
     @ViewBuilder private var pageBackground: some View {
         if colorScheme == .dark {
             AppColors.cloudyBackground
@@ -17,7 +14,6 @@ struct OnboardingCongratsView: View {
             Color.white
         }
     }
-    private var ctaBarBackground: Color { colorScheme == .dark ? AppColors.cloudyBlue : .white }
 
     var body: some View {
         GeometryReader { geo in
@@ -44,7 +40,7 @@ struct OnboardingCongratsView: View {
 
                         Text(AppConfig.Onboarding.s3Body)
                             .font(.system(size: AppConfig.Onboarding.bodySize, weight: .regular))
-                            .foregroundStyle(secondaryTextColor)
+                            .foregroundStyle(textColor)
                             .lineSpacing(11)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -55,7 +51,7 @@ struct OnboardingCongratsView: View {
                 .fontDesign(.serif)
                 .padding(.horizontal, 32)
             }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .overlay(alignment: .bottom) {
                 Button(action: onContinue) {
                     Text(AppConfig.Onboarding.s3CTA)
                         .font(.system(size: AppConfig.Onboarding.ctaSize, weight: .medium))
@@ -68,7 +64,6 @@ struct OnboardingCongratsView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 8)
                 .padding(.bottom, 16)
-                .background(ctaBarBackground)
                 .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { ctaAreaHeight = $0 }
             }
         }
