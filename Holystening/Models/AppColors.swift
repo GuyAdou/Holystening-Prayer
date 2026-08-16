@@ -17,7 +17,7 @@ enum AppColors {
     // MARK: - Feature icon gradient (onboarding welcome rows)
     static var featureIcon: LinearGradient {
         LinearGradient(
-            colors: [Color(hex: "B8D4E8"), Color(hex: "E8CC82"), Color(hex: "FAE8A8")],
+            colors: [Color(hex: "d4af37"), Color(hex: "E8CC82"), Color(hex: "FAE8A8")],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
@@ -51,7 +51,11 @@ enum AppColors {
     /// transition from this into the much darker sessionBackground.
     static var cloudyBackground: LinearGradient {
         LinearGradient(
-            colors: [cloudyBlue,cloudyBlueMid],
+            gradient: Gradient(stops: [
+                .init(color: cloudyBlue, location: 0.0),
+                .init(color: cloudyBlue, location: 0.55),
+                .init(color: cloudyBlueMid, location: 1.0),
+            ]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
