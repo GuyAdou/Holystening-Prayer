@@ -83,9 +83,8 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         isFadingOutNearEnd = false
         willCrossfade = loop && duration >= AppConfig.audioCrossfadeMinTrackDuration
         player?.numberOfLoops = (loop && !willCrossfade) ? -1 : 0
-        player?.volume = AppConfig.audioFadeInStartVolume
+        player?.volume = 1.0
         player?.play()
-        player?.setVolume(1.0, fadeDuration: AppConfig.audioFadeInDuration)
         isPlaying = true
         isPaused = false
         startProgressTimer()

@@ -22,13 +22,6 @@ enum AppConfig {
     /// Duration in seconds to fade out audio when the user stops the session.
     static let audioFadeOutDuration: TimeInterval = 2.0
 
-    /// Duration in seconds to fade in audio when a prayer session starts.
-    static let audioFadeInDuration: TimeInterval = 20.0
-
-    /// Starting volume for the fade-in — audible immediately so playback
-    /// doesn't look stalled, but still noticeably softer than full volume.
-    static let audioFadeInStartVolume: Float = 0.4
-
     /// Duration in seconds to fade the track out as it nears its true end.
     /// Only applies when the track is not looping.
     static let audioEndFadeDuration: TimeInterval = 30.0
@@ -43,7 +36,7 @@ enum AppConfig {
 
     /// Minimum track duration required to use the crossfade loop. Shorter
     /// tracks fall back to a plain seamless loop (native `numberOfLoops`)
-    /// so the crossfade-out window can't collide with the fade-in window.
+    /// so a crossfade doesn't run past the track's own start.
     static let audioCrossfadeMinTrackDuration: TimeInterval = 60.0
 
     // MARK: - Focus
