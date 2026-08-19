@@ -10,7 +10,7 @@ enum AppConfig {
     // MARK: - Audio
     /// All available prayer audio tracks. Add new tracks by appending to this array.
     static let tracks: [PrayerTrack] = [
-        PrayerTrack(name: "Harmony of Heaven", fileName: "Harmony-of-Heaven", fileExtension: "mp3"),
+        PrayerTrack(name: "Holystening Instrumental", fileName: "Holystening-Instrumental", fileExtension: "m4a"),
     ]
 
     /// Default track played when the app launches for the first time.
@@ -39,7 +39,7 @@ enum AppConfig {
     /// Duration in seconds of the crossfade between the end of one
     /// playthrough and the start of the next when looping, so the loop
     /// point is inaudible.
-    static let audioCrossfadeDuration: TimeInterval = 30.0
+    static let audioCrossfadeDuration: TimeInterval = 40.0
 
     /// Minimum track duration required to use the crossfade loop. Shorter
     /// tracks fall back to a plain seamless loop (native `numberOfLoops`)
