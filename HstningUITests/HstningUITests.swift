@@ -44,6 +44,9 @@ class AppUITestCase: XCTestCase {
         static let noteTitleField = "note-title-field"
         static let noteBody       = "note-body-editor"
         static let noteDone       = "note-done-button"
+        // Settings
+        static let sessionDurationLabel  = "session-duration-label"
+        static let sessionDurationSlider = "session-duration-slider"
     }
 
     // MARK: Launch helpers
@@ -576,6 +579,25 @@ final class SettingsUITests: AppUITestCase {
         let app = launchApp()
         openSettings(in: app)
         XCTAssertFalse(app.staticTexts["Focus Mode"].exists)
+    }
+
+    @MainActor
+    func testSettings_durationSliderDefaultsAndAdjusts() throws {
+        let app = launchApp()
+        openSettings(in: app)
+
+        XCTAssertTrue(app.staticTexts["Prayer Duration"].exists)
+        let label = app.staticTexts[AID.sessionDurationLabel]
+        XCTAssertTrue(label.waitForExistence(timeout: 3))
+        XCTAssertEqual(label.label, "5 min")
+
+        let slider = app.otherElements[AID.sessionDurationSlider]
+        XCTAssertTrue(slider.waitForExistence(timeout: 3))
+        let start = slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+        let end = slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
+
+        XCTAssertEqual(app.staticTexts[AID.sessionDurationLabel].label, "1 hr")
     }
 }
 

@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 import Testing
 @testable import Holystening
 
@@ -115,5 +116,68 @@ struct PrayerViewModelTests {
         vm.resumeSession()
 
         #expect(vm.audio.isPaused == false)
+    }
+
+    // MARK: - Session duration wiring (Settings slider -> AudioService)
+
+    @Test func defaultSessionDurationIsFiveMinutes() async throws {
+        let vm = PrayerViewModel()
+        #expect(vm.settings.sessionDuration == SessionDurationSteps.defaultDuration)
+    }
+
+    @Test func startSession_setsAudioSessionTargetFromSettings() async throws {
+        let vm = PrayerViewModel()
+        vm.settings.sessionDuration = 600
+
+        vm.startSession()
+
+        #expect(vm.audio.sessionRemaining == 600)
+        #expect(vm.audio.sessionProgress == 0)
+    }
+
+    @Test func formattedSessionRemaining_matchesSelectedDuration() async throws {
+        let vm = PrayerViewModel()
+        vm.settings.sessionDuration = 300
+
+        vm.startSession()
+
+        #expect(vm.audio.formattedSessionRemaining == "5:00")
+    }
+}
+
+// MARK: - SessionDurationSteps
+
+struct SessionDurationStepsTests {
+
+    @Test func valuesSpanFiveMinutesToOneHourInFiveMinuteSteps() {
+        let values = SessionDurationSteps.values
+        #expect(values.first == 300)
+        #expect(values.last == 3600)
+        #expect(values.count == 12)
+        #expect(values == values.sorted())
+    }
+
+    @Test func defaultDurationIsTheFirstStep() {
+        #expect(SessionDurationSteps.defaultDuration == 300)
+    }
+
+    @Test(arguments: [
+        (300.0, "5 min"),
+        (600.0, "10 min"),
+        (1800.0, "30 min"),
+        (3600.0, "1 hr"),
+    ])
+    func labelFormatsMinutesOrHour(duration: TimeInterval, expected: String) {
+        #expect(SessionDurationSteps.label(for: duration) == expected)
+    }
+
+    @Test func indexRoundTripsForEveryStep() {
+        for (i, value) in SessionDurationSteps.values.enumerated() {
+            #expect(SessionDurationSteps.index(for: value) == i)
+        }
+    }
+
+    @Test func indexFallsBackToZeroForAnUnknownValue() {
+        #expect(SessionDurationSteps.index(for: 42) == 0)
     }
 }

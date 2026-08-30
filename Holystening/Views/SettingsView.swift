@@ -5,6 +5,13 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showFixInterruptions = false
 
+    private var sessionDurationIndex: Binding<Int> {
+        Binding(
+            get: { SessionDurationSteps.index(for: settings.sessionDuration) },
+            set: { settings.sessionDuration = SessionDurationSteps.values[$0] }
+        )
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -26,6 +33,28 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Prayer Audio")
+                }
+
+                Section {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text(SessionDurationSteps.label(for: settings.sessionDuration))
+                            .font(.title3.weight(.semibold))
+                            .contentTransition(.numericText())
+                            .animation(.default, value: settings.sessionDuration)
+                            .accessibilityIdentifier("session-duration-label")
+
+                        SteppedGlassSlider(
+                            selection: sessionDurationIndex,
+                            stepCount: SessionDurationSteps.values.count
+                        )
+                        .padding(.vertical, 6)
+                        .accessibilityIdentifier("session-duration-slider")
+                    }
+                    .padding(.vertical, 6)
+                } header: {
+                    Text("Prayer Duration")
+                } footer: {
+                    Text("How long your prayer session runs. The track loops smoothly to fill the time.")
                 }
 
 Section("Interruptions") {
