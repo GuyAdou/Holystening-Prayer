@@ -6,7 +6,6 @@ import UIKit
 class PrayerViewModel: ObservableObject {
     @Published var isSessionActive = false
     @Published var settings = AppSettings()
-    @Published var isLooping: Bool = AppConfig.defaultLoopEnabled
 
     let audio = AudioService()
     let focus = FocusService()
@@ -53,7 +52,7 @@ class PrayerViewModel: ObservableObject {
 
     func startSession() {
         audio.load(track: currentTrack)
-        audio.play(loop: isLooping)
+        audio.play(sessionDuration: settings.sessionDuration)
         focus.enable(focusName: settings.selectedFocusName)
         UIApplication.shared.isIdleTimerDisabled = true
         isSessionActive = true
@@ -82,11 +81,6 @@ class PrayerViewModel: ObservableObject {
         } else {
             pauseSession()
         }
-    }
-
-    func toggleLoop() {
-        isLooping.toggle()
-        audio.setLooping(isLooping)
     }
 
     // MARK: - Private
