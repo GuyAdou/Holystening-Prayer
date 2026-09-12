@@ -123,34 +123,20 @@ struct HomeView: View {
 
                             Capsule()
                                 .fill(AppColors.accentHorizontal)
-                                .frame(width: geo.size.width * vm.audio.progress, height: 3)
-                                .animation(.linear(duration: 0.5), value: vm.audio.progress)
+                                .frame(width: geo.size.width * vm.audio.sessionProgress, height: 3)
+                                .animation(.linear(duration: 0.5), value: vm.audio.sessionProgress)
                         }
                     }
                     .frame(height: 3)
                     .padding(.horizontal, 48)
                     .opacity(vm.isSessionActive ? 1 : 0.3)
 
-                    Text(vm.audio.formattedDuration)
+                    Text(vm.isSessionActive ? vm.audio.formattedSessionRemaining : SessionDurationSteps.label(for: vm.settings.sessionDuration))
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle((useLightForeground ? Color.white : AppColors.navy).opacity(0.85))
                         .opacity(vm.isSessionActive ? 1 : 0.3)
-
-                    // Loop toggle
-                    Button(action: vm.toggleLoop) {
-                        Image(systemName: "repeat")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(
-                                vm.isLooping
-                                    ? AppColors.teal
-                                    : (useLightForeground ? .white.opacity(0.35) : AppColors.navy.opacity(0.35))
-                            )
-                            .padding(10)
-                            .background(
-                                Circle().fill(vm.isLooping ? AppColors.teal.opacity(0.15) : Color.clear)
-                            )
-                    }
-                    .animation(.easeInOut(duration: 0.2), value: vm.isLooping)
+                        .contentTransition(.numericText())
+                        .animation(.default, value: vm.audio.sessionRemaining)
                 }
                 .padding(.top, 40)
 
