@@ -22,6 +22,14 @@ enum AppConfig {
     /// Duration in seconds to fade out audio when the user stops the session.
     static let audioFadeOutDuration: TimeInterval = 2.0
 
+    /// Volume the track starts at when a session begins, before ramping up
+    /// to full volume over `audioFadeInDuration`.
+    static let audioFadeInStartVolume: Float = 0.1
+
+    /// Duration in seconds to fade audio in from `audioFadeInStartVolume`
+    /// to full volume when the user starts a session.
+    static let audioFadeInDuration: TimeInterval = 10.0
+
     /// Duration in seconds to fade the track out as the whole prayer
     /// session (not just a single playthrough) nears its target length.
     static let audioSessionEndFadeDuration: TimeInterval = 30.0
