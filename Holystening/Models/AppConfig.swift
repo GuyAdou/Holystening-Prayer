@@ -23,12 +23,17 @@ enum AppConfig {
     static let audioFadeOutDuration: TimeInterval = 2.0
 
     /// Volume the track starts at when a session begins, before ramping up
-    /// to full volume over `audioFadeInDuration`.
+    /// to `audioMaxVolume` over `audioFadeInDuration`.
     static let audioFadeInStartVolume: Float = 0.1
 
     /// Duration in seconds to fade audio in from `audioFadeInStartVolume`
-    /// to full volume when the user starts a session.
+    /// to `audioMaxVolume` when the user starts a session.
     static let audioFadeInDuration: TimeInterval = 10.0
+
+    /// Ceiling on the track's playback volume — every internal "full
+    /// volume" target (fade-in, crossfade, loop restore) ramps to this
+    /// instead of 1.0, so the mix never plays louder than this level.
+    static let audioMaxVolume: Float = 0.8
 
     /// Duration in seconds to fade the track out as the whole prayer
     /// session (not just a single playthrough) nears its target length.
