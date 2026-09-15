@@ -115,4 +115,10 @@ enum AppConfig {
 
     /// Duration of the pulsing ring animation on the play button.
     static let pulseRingDuration: TimeInterval = 1.4
+
+    /// After a first-time user finishes onboarding, how long they see the
+    /// ordinary Home screen before the prayer session auto-starts — so they
+    /// land somewhere familiar instead of audio starting the instant
+    /// onboarding ends.
+    static let firstLaunchAutoStartDelay: TimeInterval = 1.5
 }

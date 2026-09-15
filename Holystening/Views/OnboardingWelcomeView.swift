@@ -11,6 +11,11 @@ struct OnboardingWelcomeView: View {
             "Holystening automatically activates your Apple Focus mode to block notifications and interruptions."
         ),
         (
+            "music.note",
+            "Atmospheric timed background music",
+            "Instrumental music plays for however long you choose to pray, then fades gently as your session ends."
+        ),
+        (
             "book.fill",
             "Bible",
             "Read and meditate on the word of God during your prayer time."
@@ -50,6 +55,8 @@ struct OnboardingWelcomeView: View {
                             .font(.system(size: AppConfig.Onboarding.headlineSize, weight: .semibold))
                             .foregroundStyle(textColor)
                             .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.75)
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text(AppConfig.Onboarding.s1Body)
@@ -57,6 +64,8 @@ struct OnboardingWelcomeView: View {
                             .foregroundStyle(textColor)
                             .multilineTextAlignment(.center)
                             .lineSpacing(5)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(.bottom, 32)
@@ -74,12 +83,15 @@ struct OnboardingWelcomeView: View {
                                     Text(feature.title)
                                         .font(.system(size: AppConfig.Onboarding.featureRowTitleSize, weight: .semibold))
                                         .foregroundStyle(textColor)
-                                        .fixedSize(horizontal: false, vertical: true)
+                                        .lineLimit(2)
+                                        .minimumScaleFactor(0.75)
 
                                     Text(feature.body)
                                         .font(.system(size: AppConfig.Onboarding.featureRowBodySize, weight: .regular))
                                         .foregroundStyle(textColor)
                                         .lineSpacing(3)
+                                        .lineLimit(4)
+                                        .minimumScaleFactor(0.85)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)

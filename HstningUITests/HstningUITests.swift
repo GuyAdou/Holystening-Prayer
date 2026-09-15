@@ -28,6 +28,9 @@ class AppUITestCase: XCTestCase {
         // Home
         static let playButton     = "prayer-play-button"
         static let settingsGear   = "settings-gear-button"
+        static let homeDurationButton   = "home-duration-button"
+        static let durationSheetSlider  = "duration-sheet-slider"
+        static let durationSheetConfirm = "duration-sheet-confirm-button"
         // Pills
         static let biblePill      = "bible-pill-button"
         static let notesPill      = "notes-pill-button"
@@ -44,9 +47,6 @@ class AppUITestCase: XCTestCase {
         static let noteTitleField = "note-title-field"
         static let noteBody       = "note-body-editor"
         static let noteDone       = "note-done-button"
-        // Settings
-        static let sessionDurationLabel  = "session-duration-label"
-        static let sessionDurationSlider = "session-duration-slider"
     }
 
     // MARK: Launch helpers
@@ -147,6 +147,84 @@ final class HomeUITests: AppUITestCase {
         let app = launchApp()
         openSettings(in: app)
         XCTAssertTrue(app.navigationBars["Settings"].exists)
+    }
+
+    @MainActor
+    func testHome_durationButtonShowsCurrentDurationAndOpensSheet() throws {
+        let app = launchApp()
+        let durationButton = app.buttons[AID.homeDurationButton]
+        XCTAssertTrue(durationButton.waitForExistence(timeout: 3))
+        XCTAssertEqual(durationButton.label, "5 min")
+
+        durationButton.tap()
+        XCTAssertTrue(app.staticTexts["Choose a length"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons[AID.durationSheetConfirm].exists)
+    }
+
+    @MainActor
+    func testHome_durationSheetConfirmUpdatesHomeLabel() throws {
+        let app = launchApp()
+        app.buttons[AID.homeDurationButton].tap()
+
+        let slider = app.otherElements[AID.durationSheetSlider]
+        XCTAssertTrue(slider.waitForExistence(timeout: 3))
+        let start = slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+        let end = slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
+
+        app.buttons[AID.durationSheetConfirm].tap()
+        XCTAssertFalse(app.buttons[AID.durationSheetConfirm].waitForExistence(timeout: 1))
+        XCTAssertEqual(app.buttons[AID.homeDurationButton].label, "1 hr")
+    }
+
+    @MainActor
+    func testHome_durationSheetDismissWithoutConfirmKeepsPreviousDuration() throws {
+        let app = launchApp()
+        app.buttons[AID.homeDurationButton].tap()
+
+        let slider = app.otherElements[AID.durationSheetSlider]
+        XCTAssertTrue(slider.waitForExistence(timeout: 3))
+        let start = slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+        let end = slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
+
+        // Swipe the sheet itself down to dismiss without confirming — the sheet
+        // only occupies the bottom third of the screen, so a generic
+        // app.swipeDown() starting above it lands on the dimmed backdrop instead.
+        let title = app.staticTexts["Choose a length"]
+        let dragStart = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let dragEnd = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 2.0))
+        dragStart.press(forDuration: 0.05, thenDragTo: dragEnd)
+        XCTAssertFalse(app.buttons[AID.durationSheetConfirm].waitForExistence(timeout: 1))
+        XCTAssertEqual(app.buttons[AID.homeDurationButton].label, "5 min")
+    }
+
+    @MainActor
+    func testHome_durationButtonNotShownDuringActiveSession() throws {
+        let app = launchApp()
+        startSession(in: app)
+        XCTAssertFalse(app.buttons[AID.homeDurationButton].exists)
+    }
+
+    // A first-time user finishing onboarding should land on the ordinary
+    // Home screen first — not have the prayer session start under them
+    // instantly — with the session auto-starting only after a short delay.
+    @MainActor
+    func testHome_firstLaunchAutoStartsAfterDelayNotImmediately() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-UITesting", "-hasCompletedOnboarding", "1", "-autoStartSession", "1"]
+        app.launch()
+
+        XCTAssertTrue(app.buttons[AID.playButton].waitForExistence(timeout: 3))
+        XCTAssertFalse(
+            app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch.exists,
+            "Session must not auto-start the instant onboarding finishes"
+        )
+        XCTAssertTrue(
+            app.buttons.matching(NSPredicate(format: "label CONTAINS 'Stop'")).firstMatch.waitForExistence(timeout: 5),
+            "Session should auto-start a few seconds after landing on Home"
+        )
     }
 }
 
@@ -582,22 +660,10 @@ final class SettingsUITests: AppUITestCase {
     }
 
     @MainActor
-    func testSettings_durationSliderDefaultsAndAdjusts() throws {
+    func testSettings_noPrayerDurationSection() throws {
         let app = launchApp()
         openSettings(in: app)
-
-        XCTAssertTrue(app.staticTexts["Prayer Duration"].exists)
-        let label = app.staticTexts[AID.sessionDurationLabel]
-        XCTAssertTrue(label.waitForExistence(timeout: 3))
-        XCTAssertEqual(label.label, "5 min")
-
-        let slider = app.otherElements[AID.sessionDurationSlider]
-        XCTAssertTrue(slider.waitForExistence(timeout: 3))
-        let start = slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
-        let end = slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
-        start.press(forDuration: 0.05, thenDragTo: end)
-
-        XCTAssertEqual(app.staticTexts[AID.sessionDurationLabel].label, "1 hr")
+        XCTAssertFalse(app.staticTexts["Prayer Duration"].exists, "Duration is now set from the Home screen's quick-access sheet, not Settings")
     }
 }
 
@@ -620,7 +686,7 @@ final class OnboardingUITests: AppUITestCase {
         let app = launchOnboarding()
         _ = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Continue'")).firstMatch
             .waitForExistence(timeout: 3)
-        for label in ["Pray without distractions", "Bible"] {
+        for label in ["Pray without distractions", "Atmospheric timed background music", "Bible"] {
             XCTAssertTrue(app.staticTexts[label].exists, "'\(label)' must be visible on Welcome screen")
         }
         XCTAssertFalse(app.staticTexts["Notes"].exists, "Notes is archived and must not appear on the Welcome screen")
