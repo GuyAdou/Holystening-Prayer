@@ -8,6 +8,7 @@ struct HomeView: View {
     @State private var showBible = false
     @State private var showNotes = false
     @State private var showSettings = false
+    @State private var showDurationPicker = false
     @State private var showTransition = false
     @State private var pulseAnimation = false
     @State private var isIdle = false
@@ -131,12 +132,31 @@ struct HomeView: View {
                     .padding(.horizontal, 48)
                     .opacity(vm.isSessionActive ? 1 : 0.3)
 
-                    Text(vm.isSessionActive ? vm.audio.formattedSessionRemaining : SessionDurationSteps.label(for: vm.settings.sessionDuration))
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle((useLightForeground ? Color.white : AppColors.navy).opacity(0.85))
-                        .opacity(vm.isSessionActive ? 1 : 0.3)
-                        .contentTransition(.numericText())
-                        .animation(.default, value: vm.audio.sessionRemaining)
+                    if vm.isSessionActive {
+                        // Static — shows the session's total length, not a live
+                        // countdown. Only the progress bar above animates.
+                        Text(SessionDurationSteps.label(for: vm.settings.sessionDuration))
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
+                    } else {
+                        Button { showDurationPicker = true } label: {
+                            HStack(spacing: 4) {
+                                Text(SessionDurationSteps.label(for: vm.settings.sessionDuration))
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2.weight(.semibold))
+                            }
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(useLightForeground ? Color.white : AppColors.navy)
+                            .contentTransition(.numericText())
+                            .animation(.default, value: vm.settings.sessionDuration)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                        }
+                        .buttonStyle(.plain)
+                        .glassEffect(in: Capsule())
+                        .accessibilityIdentifier("home-duration-button")
+                        .accessibilityLabel(SessionDurationSteps.label(for: vm.settings.sessionDuration))
+                    }
                 }
                 .padding(.top, 40)
 
@@ -224,6 +244,7 @@ struct HomeView: View {
         }
         .animation(.spring(duration: 0.4), value: vm.isSessionActive)
         .sheet(isPresented: $showSettings) { SettingsView(settings: $vm.settings) }
+        .sheet(isPresented: $showDurationPicker) { DurationPickerSheet(settings: $vm.settings) }
         .fullScreenCover(isPresented: $showBible) { BibleView() }
         .onChange(of: showBible) { _, isShowing in
             if !isShowing { resetIdleTimer() }
@@ -240,10 +261,13 @@ struct HomeView: View {
         .onAppear {
             if autoStartSession {
                 autoStartSession = false
-                showTransition = true
-                vm.startSession()
-                withAnimation(.easeOut(duration: 0.8)) { showTransition = false }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { pulseAnimation = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + AppConfig.firstLaunchAutoStartDelay) {
+                    guard !vm.isSessionActive else { return }
+                    showTransition = true
+                    vm.startSession()
+                    withAnimation(.easeOut(duration: 0.8)) { showTransition = false }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { pulseAnimation = true }
+                }
             }
         }
         .onChange(of: scenePhase) { _, phase in
