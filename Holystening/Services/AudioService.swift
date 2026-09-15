@@ -101,7 +101,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         player?.numberOfLoops = (loop && !willCrossfade) ? -1 : 0
         player?.volume = AppConfig.audioFadeInStartVolume
         player?.play()
-        player?.setVolume(1.0, fadeDuration: AppConfig.audioFadeInDuration)
+        player?.setVolume(AppConfig.audioMaxVolume, fadeDuration: AppConfig.audioFadeInDuration)
         isPlaying = true
         isPaused = false
         startProgressTimer()
@@ -136,7 +136,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
         } else if isCrossfading, let player, let nextPlayer {
             let remaining = max(player.duration - player.currentTime, 0.01)
             player.setVolume(0.0, fadeDuration: remaining)
-            nextPlayer.setVolume(1.0, fadeDuration: remaining)
+            nextPlayer.setVolume(AppConfig.audioMaxVolume, fadeDuration: remaining)
             scheduleCrossfadeTimer(after: remaining)
         }
         isPlaying = true
@@ -176,7 +176,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
                 for p in players {
                     p.stop()
                     p.currentTime = 0
-                    p.volume = 1.0
+                    p.volume = AppConfig.audioMaxVolume
                 }
                 self.isPlaying = false
                 self.progress = 0
@@ -398,7 +398,7 @@ class AudioService: NSObject, ObservableObject, AVAudioPlayerDelegate {
             incoming.numberOfLoops = 0
             incoming.volume = 0.0
             incoming.play()
-            incoming.setVolume(1.0, fadeDuration: remaining)
+            incoming.setVolume(AppConfig.audioMaxVolume, fadeDuration: remaining)
             nextPlayer = incoming
         } catch {
             print("AudioService: failed to prepare crossfade player — \(error)")
