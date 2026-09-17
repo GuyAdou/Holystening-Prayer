@@ -62,17 +62,23 @@ struct DurationPickerSheet: View {
                 .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .accessibilityIdentifier("duration-sheet-default-toggle")
 
-            Button("Confirm") {
+            Button {
                 settings.sessionDuration = SessionDurationSteps.values[pendingIndex]
                 dismiss()
+            } label: {
+                Text("Confirm")
+                    .font(.system(size: 17, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
             }
             .buttonStyle(.glassProminent)
-            .frame(maxWidth: .infinity)
+            .buttonBorderShape(.roundedRectangle(radius: 20))
+            .tint(AppColors.teal)
             .accessibilityIdentifier("duration-sheet-confirm-button")
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 24)
-        .presentationDetents([.height(360)])
+        .presentationDetents([.height(380)])
         .presentationDragIndicator(.visible)
     }
 }
