@@ -23,9 +23,16 @@ enum SessionDurationSteps {
         set { UserDefaults.standard.set(newValue, forKey: savedDefaultDurationKey) }
     }
 
-    static func label(for duration: TimeInterval) -> String {
+    /// Splits a duration's label into its numeral and unit so a caller can
+    /// style them differently (e.g. a large numeral with a smaller unit).
+    static func components(for duration: TimeInterval) -> (value: String, unit: String) {
         let minutes = Int((duration / 60).rounded())
-        return minutes >= 60 ? "1 hr" : "\(minutes) min"
+        return minutes >= 60 ? ("1", "hr") : ("\(minutes)", "min")
+    }
+
+    static func label(for duration: TimeInterval) -> String {
+        let (value, unit) = components(for: duration)
+        return "\(value) \(unit)"
     }
 
     static func index(for duration: TimeInterval) -> Int {

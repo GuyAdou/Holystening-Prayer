@@ -3,7 +3,7 @@ import SwiftUI
 /// Duration picker presented as a bottom sheet from the Home screen — the
 /// only place prayer duration is set now that Settings no longer has its
 /// own slider. Edits are local until "Confirm" commits them to `settings`;
-/// swiping the sheet away discards the change. "Default timer" is
+/// swiping the sheet away discards the change. "Set as default" is
 /// independent of that — it writes straight to SessionDurationSteps
 /// .savedDefaultDuration immediately, since it governs what future
 /// launches start at, not this session's pick.
@@ -20,9 +20,9 @@ struct DurationPickerSheet: View {
         self._defaultDuration = State(initialValue: SessionDurationSteps.savedDefaultDuration)
     }
 
-    /// Radio semantics, not a switch — turning it on marks the currently
-    /// selected duration as the default; there's always exactly one
-    /// default, so turning it off (without picking another) is a no-op.
+    /// Always exactly one default, so turning this off (without picking
+    /// another duration as the default) is a no-op — the switch springs
+    /// back to on.
     private var isDefaultTimerOn: Binding<Bool> {
         Binding(
             get: { SessionDurationSteps.values[pendingIndex] == defaultDuration },
@@ -35,32 +35,62 @@ struct DurationPickerSheet: View {
         )
     }
 
+    private var selected: (value: String, unit: String) {
+        SessionDurationSteps.components(for: SessionDurationSteps.values[pendingIndex])
+    }
+
     var body: some View {
         VStack(spacing: 22) {
-            VStack(spacing: 6) {
-                Text("Choose a length")
-                    .font(.title3.weight(.semibold))
+            Text("Session Length")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.top, 8)
 
-                Text(SessionDurationSteps.label(for: SessionDurationSteps.values[pendingIndex]))
-                    .font(.system(size: 32, weight: .bold))
+            HStack(alignment: .lastTextBaseline, spacing: 6) {
+                Text(selected.value)
+                    .font(.system(size: 64, weight: .bold))
                     .contentTransition(.numericText())
-                    .animation(.default, value: pendingIndex)
+                Text(selected.unit)
+                    .font(.title2.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.6))
             }
-            .padding(.top, 8)
+            .foregroundStyle(.white)
+            .animation(.default, value: pendingIndex)
 
-            SteppedGlassSlider(
-                selection: $pendingIndex,
-                stepCount: SessionDurationSteps.values.count
-            )
+            VStack(spacing: 8) {
+                SteppedGlassSlider(
+                    selection: $pendingIndex,
+                    stepCount: SessionDurationSteps.values.count,
+                    tint: .white,
+                    showsTicks: false
+                )
+                .accessibilityIdentifier("duration-sheet-slider")
+
+                HStack {
+                    Text("\(Int(SessionDurationSteps.values.first! / 60)) min")
+                    Spacer()
+                    Text("\(Int(SessionDurationSteps.values.last! / 60)) min")
+                }
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.6))
+            }
             .padding(.horizontal, 32)
-            .accessibilityIdentifier("duration-sheet-slider")
 
-            Toggle("Default timer", isOn: isDefaultTimerOn)
-                .toggleStyle(.radio)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .accessibilityIdentifier("duration-sheet-default-toggle")
+            Toggle(isOn: isDefaultTimerOn) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Set as default")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(.white)
+                    Text("Used for new sessions")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+            }
+            .tint(.green)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .accessibilityIdentifier("duration-sheet-default-toggle")
 
             Button {
                 settings.sessionDuration = SessionDurationSteps.values[pendingIndex]
@@ -78,29 +108,9 @@ struct DurationPickerSheet: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 24)
-        .presentationDetents([.height(380)])
+        .presentationDetents([.height(460)])
         .presentationDragIndicator(.visible)
+        .presentationBackground(AppColors.sessionBackground)
+        .presentationCornerRadius(32)
     }
-}
-
-private struct RadioToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        Button {
-            configuration.isOn = true
-        } label: {
-            HStack {
-                configuration.label
-                    .font(.subheadline)
-                Spacer()
-                Image(systemName: configuration.isOn ? "largecircle.fill.circle" : "circle")
-                    .font(.system(size: 20))
-                    .foregroundStyle(configuration.isOn ? AppColors.teal : Color.secondary)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private extension ToggleStyle where Self == RadioToggleStyle {
-    static var radio: RadioToggleStyle { RadioToggleStyle() }
 }

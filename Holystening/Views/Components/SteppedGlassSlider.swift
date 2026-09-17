@@ -12,6 +12,7 @@ struct SteppedGlassSlider: View {
     var tint: Color = AppColors.teal
     var trackHeight: CGFloat = 6
     var thumbDiameter: CGFloat = 30
+    var showsTicks: Bool = true
 
     @State private var isDragging = false
     @State private var dragX: CGFloat?
@@ -30,7 +31,9 @@ struct SteppedGlassSlider: View {
                     .fill(tint)
                     .frame(width: max(x, trackHeight), height: trackHeight)
 
-                ticks
+                if showsTicks {
+                    ticks
+                }
 
                 Circle()
                     .glassEffect(in: Circle())
