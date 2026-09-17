@@ -180,4 +180,15 @@ struct SessionDurationStepsTests {
     @Test func indexFallsBackToZeroForAnUnknownValue() {
         #expect(SessionDurationSteps.index(for: 42) == 0)
     }
+
+    @Test func savedDefaultDurationFallsBackToDefaultDurationWhenNeverSet() {
+        UserDefaults.standard.removeObject(forKey: "savedDefaultSessionDuration")
+        #expect(SessionDurationSteps.savedDefaultDuration == SessionDurationSteps.defaultDuration)
+    }
+
+    @Test func savedDefaultDurationPersistsWhateverIsAssigned() {
+        defer { UserDefaults.standard.removeObject(forKey: "savedDefaultSessionDuration") }
+        SessionDurationSteps.savedDefaultDuration = 1800
+        #expect(SessionDurationSteps.savedDefaultDuration == 1800)
+    }
 }
