@@ -17,7 +17,7 @@ struct PrayerTrack: Identifiable, Hashable {
 struct AppSettings {
     var selectedTrackIndex: Int = AppConfig.defaultTrackIndex
     var selectedFocusName: String = AppConfig.defaultFocusMode
-    var sessionDuration: TimeInterval = SessionDurationSteps.defaultDuration
+    var sessionDuration: TimeInterval = SessionDurationSteps.savedDefaultDuration
 
     static var availableFocusModes: [String] { AppConfig.focusModes }
     static var availableTracks: [PrayerTrack] { AppConfig.tracks }

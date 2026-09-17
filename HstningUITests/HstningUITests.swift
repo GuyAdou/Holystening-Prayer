@@ -31,6 +31,7 @@ class AppUITestCase: XCTestCase {
         static let homeDurationButton   = "home-duration-button"
         static let durationSheetSlider  = "duration-sheet-slider"
         static let durationSheetConfirm = "duration-sheet-confirm-button"
+        static let durationSheetDefaultToggle = "duration-sheet-default-toggle"
         // Pills
         static let biblePill      = "bible-pill-button"
         static let notesPill      = "notes-pill-button"
@@ -205,6 +206,83 @@ final class HomeUITests: AppUITestCase {
         let app = launchApp()
         startSession(in: app)
         XCTAssertFalse(app.buttons[AID.homeDurationButton].exists)
+    }
+
+    // "Default timer" is a radio, not a switch: it reflects whether the
+    // slider currently sits on the saved app-wide default, and turning it
+    // on reassigns that default to wherever the slider is — it never goes
+    // off on its own tap. Defensively restores 5 min as the default in a
+    // teardown block so a failure here can't leak state into other tests.
+    @MainActor
+    func testDurationSheet_defaultTimerTracksSliderAndCanBeReassigned() throws {
+        let app = launchApp()
+
+        addTeardownBlock {
+            if !app.buttons[AID.homeDurationButton].waitForExistence(timeout: 2) { return }
+            app.buttons[AID.homeDurationButton].tap()
+            guard app.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 2) else { return }
+            if app.switches[AID.durationSheetDefaultToggle].value as? String != "1" {
+                let slider = app.otherElements[AID.durationSheetSlider]
+                slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+                    .press(forDuration: 0.05, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5)))
+                app.switches[AID.durationSheetDefaultToggle].tap()
+            }
+            app.buttons[AID.durationSheetConfirm].tap()
+        }
+
+        app.buttons[AID.homeDurationButton].tap()
+        let slider = app.otherElements[AID.durationSheetSlider]
+        XCTAssertTrue(slider.waitForExistence(timeout: 3))
+        let toggle = app.switches[AID.durationSheetDefaultToggle]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 3))
+        XCTAssertEqual(toggle.value as? String, "1", "5 min is the implicit default until the user sets another")
+
+        let sliderStart = slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+        let sliderEnd = slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+        sliderStart.press(forDuration: 0.05, thenDragTo: sliderEnd)
+        XCTAssertEqual(toggle.value as? String, "0", "1 hr isn't the default yet")
+
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "1", "Tapping the radio makes 1 hr the new default")
+
+        sliderEnd.press(forDuration: 0.05, thenDragTo: sliderStart)
+        XCTAssertEqual(toggle.value as? String, "0", "5 min is no longer the default")
+    }
+
+    @MainActor
+    func testDurationSheet_defaultTimerPersistsAcrossRelaunch() throws {
+        let app = launchApp()
+
+        addTeardownBlock {
+            let relaunch = XCUIApplication()
+            relaunch.launchArguments += ["-UITesting", "-hasCompletedOnboarding", "1"]
+            relaunch.launch()
+            guard relaunch.buttons[AID.homeDurationButton].waitForExistence(timeout: 3) else { return }
+            relaunch.buttons[AID.homeDurationButton].tap()
+            guard relaunch.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 2) else { return }
+            if relaunch.switches[AID.durationSheetDefaultToggle].value as? String != "1" {
+                let slider = relaunch.otherElements[AID.durationSheetSlider]
+                slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+                    .press(forDuration: 0.05, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)))
+                relaunch.switches[AID.durationSheetDefaultToggle].tap()
+            }
+            relaunch.buttons[AID.durationSheetConfirm].tap()
+        }
+
+        app.buttons[AID.homeDurationButton].tap()
+        let slider = app.otherElements[AID.durationSheetSlider]
+        XCTAssertTrue(slider.waitForExistence(timeout: 3))
+        slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
+            .press(forDuration: 0.05, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5)))
+        app.switches[AID.durationSheetDefaultToggle].tap()
+        app.buttons[AID.durationSheetConfirm].tap()
+
+        let relaunched = XCUIApplication()
+        relaunched.launchArguments += ["-UITesting", "-hasCompletedOnboarding", "1"]
+        relaunched.launch()
+        let durationButton = relaunched.buttons[AID.homeDurationButton]
+        XCTAssertTrue(durationButton.waitForExistence(timeout: 3))
+        XCTAssertEqual(durationButton.label, "1 hr", "A fresh launch should start at the saved default, not the hardcoded 5 min")
     }
 
     // A first-time user finishing onboarding should land on the ordinary
