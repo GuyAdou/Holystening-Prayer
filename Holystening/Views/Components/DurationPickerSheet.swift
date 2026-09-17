@@ -73,7 +73,7 @@ struct DurationPickerSheet: View {
             }
             .buttonStyle(.glassProminent)
             .buttonBorderShape(.roundedRectangle(radius: 20))
-            .tint(AppColors.teal)
+            .tint(.blue)
             .accessibilityIdentifier("duration-sheet-confirm-button")
         }
         .padding(.horizontal, 24)
