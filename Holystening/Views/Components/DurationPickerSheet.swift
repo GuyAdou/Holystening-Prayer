@@ -36,15 +36,17 @@ struct DurationPickerSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 18) {
-            Text("Choose a length")
-                .font(.title3.weight(.semibold))
-                .padding(.top, 8)
+        VStack(spacing: 22) {
+            VStack(spacing: 6) {
+                Text("Choose a length")
+                    .font(.title3.weight(.semibold))
 
-            Text(SessionDurationSteps.label(for: SessionDurationSteps.values[pendingIndex]))
-                .font(.system(size: 30, weight: .semibold))
-                .contentTransition(.numericText())
-                .animation(.default, value: pendingIndex)
+                Text(SessionDurationSteps.label(for: SessionDurationSteps.values[pendingIndex]))
+                    .font(.system(size: 32, weight: .bold))
+                    .contentTransition(.numericText())
+                    .animation(.default, value: pendingIndex)
+            }
+            .padding(.top, 8)
 
             SteppedGlassSlider(
                 selection: $pendingIndex,
@@ -55,21 +57,22 @@ struct DurationPickerSheet: View {
 
             Toggle("Default timer", isOn: isDefaultTimerOn)
                 .toggleStyle(.radio)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Color(uiColor: .systemGray6), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 .accessibilityIdentifier("duration-sheet-default-toggle")
-
-            Spacer(minLength: 12)
 
             Button("Confirm") {
                 settings.sessionDuration = SessionDurationSteps.values[pendingIndex]
                 dismiss()
             }
             .buttonStyle(.glassProminent)
+            .frame(maxWidth: .infinity)
             .accessibilityIdentifier("duration-sheet-confirm-button")
         }
         .padding(.horizontal, 24)
-        .padding(.bottom, 20)
-        .presentationDetents([.fraction(0.42)])
+        .padding(.bottom, 24)
+        .presentationDetents([.height(360)])
         .presentationDragIndicator(.visible)
     }
 }
@@ -84,8 +87,8 @@ private struct RadioToggleStyle: ToggleStyle {
                     .font(.subheadline)
                 Spacer()
                 Image(systemName: configuration.isOn ? "largecircle.fill.circle" : "circle")
-                    .font(.system(size: 22))
-                    .foregroundStyle(configuration.isOn ? Color.accentColor : Color.secondary)
+                    .font(.system(size: 20))
+                    .foregroundStyle(configuration.isOn ? AppColors.teal : Color.secondary)
             }
         }
         .buttonStyle(.plain)
