@@ -244,7 +244,7 @@ struct HomeView: View {
         }
         .animation(.spring(duration: 0.4), value: vm.isSessionActive)
         .sheet(isPresented: $showSettings) { SettingsView(settings: $vm.settings) }
-        .sheet(isPresented: $showDurationPicker) { DurationPickerSheet(settings: $vm.settings) }
+        .sheet(isPresented: $showDurationPicker) { SessionLengthSheet(settings: $vm.settings) }
         .fullScreenCover(isPresented: $showBible) { BibleView() }
         .onChange(of: showBible) { _, isShowing in
             if !isShowing { resetIdleTimer() }

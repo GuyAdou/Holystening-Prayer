@@ -147,6 +147,12 @@ struct PrayerViewModelTests {
 
 // MARK: - SessionDurationSteps
 
+// Serialized: savedDefaultDuration-related cases share one UserDefaults key
+// (set/read/removeObject on "savedDefaultSessionDuration"), and Swift
+// Testing runs cases in a suite in parallel by default — without this,
+// e.g. one test's teardown removeObject can race another's set/read and
+// intermittently fail it.
+@Suite(.serialized)
 struct SessionDurationStepsTests {
 
     @Test func valuesSpanFiveMinutesToOneHourInFiveMinuteSteps() {

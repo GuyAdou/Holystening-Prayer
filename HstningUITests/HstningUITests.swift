@@ -158,7 +158,7 @@ final class HomeUITests: AppUITestCase {
         XCTAssertEqual(durationButton.label, "5 min")
 
         durationButton.tap()
-        XCTAssertTrue(app.staticTexts["Choose a length"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Session Length"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons[AID.durationSheetConfirm].exists)
     }
@@ -193,7 +193,7 @@ final class HomeUITests: AppUITestCase {
         // Swipe the sheet itself down to dismiss without confirming — the sheet
         // only occupies the bottom third of the screen, so a generic
         // app.swipeDown() starting above it lands on the dimmed backdrop instead.
-        let title = app.staticTexts["Choose a length"]
+        let title = app.staticTexts["Session Length"]
         let dragStart = title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
         let dragEnd = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 2.0))
         dragStart.press(forDuration: 0.05, thenDragTo: dragEnd)
@@ -221,10 +221,13 @@ final class HomeUITests: AppUITestCase {
             if !app.buttons[AID.homeDurationButton].waitForExistence(timeout: 2) { return }
             app.buttons[AID.homeDurationButton].tap()
             guard app.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 2) else { return }
+            // Drag to the minimum UNCONDITIONALLY first — the slider always
+            // opens sitting on the current default, so checking the toggle
+            // before dragging is tautologically true and skips the reset.
+            let teardownSlider = app.otherElements[AID.durationSheetSlider]
+            teardownSlider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+                .press(forDuration: 0.05, thenDragTo: teardownSlider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)))
             if app.switches[AID.durationSheetDefaultToggle].value as? String != "1" {
-                let slider = app.otherElements[AID.durationSheetSlider]
-                slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5))
-                    .press(forDuration: 0.05, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5)))
                 app.switches[AID.durationSheetDefaultToggle].tap()
             }
             app.buttons[AID.durationSheetConfirm].tap()
@@ -260,10 +263,13 @@ final class HomeUITests: AppUITestCase {
             guard relaunch.buttons[AID.homeDurationButton].waitForExistence(timeout: 3) else { return }
             relaunch.buttons[AID.homeDurationButton].tap()
             guard relaunch.otherElements[AID.durationSheetSlider].waitForExistence(timeout: 2) else { return }
+            // Drag to the minimum UNCONDITIONALLY first — the slider always
+            // opens sitting on the current default, so checking the toggle
+            // before dragging is tautologically true and skips the reset.
+            let teardownSlider = relaunch.otherElements[AID.durationSheetSlider]
+            teardownSlider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
+                .press(forDuration: 0.05, thenDragTo: teardownSlider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)))
             if relaunch.switches[AID.durationSheetDefaultToggle].value as? String != "1" {
-                let slider = relaunch.otherElements[AID.durationSheetSlider]
-                slider.coordinate(withNormalizedOffset: CGVector(dx: 1, dy: 0.5))
-                    .press(forDuration: 0.05, thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0.5)))
                 relaunch.switches[AID.durationSheetDefaultToggle].tap()
             }
             relaunch.buttons[AID.durationSheetConfirm].tap()
