@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Holystening: the distraction-free prayer app</title>
+<meta name="description" content="Holystening blocks distractions, plays soft instrumental music and keeps the Bible one tap away, so you can pray anywhere. Free. Join the iPhone beta.">
+<meta name="theme-color" content="#b9daf5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Holystening: the distraction-free prayer app">
+<meta property="og:description" content="Holystening blocks distractions, plays soft instrumental music and keeps the Bible one tap away, so you can pray anywhere. Free. Join the iPhone beta.">
+<meta property="og:image" content="images/og-image.png">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+body{margin:0;font-family:'Instrument Sans',system-ui,sans-serif;background:#ffffff;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.serif{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:400}
+.sky{position:relative;overflow:hidden;background:linear-gradient(180deg,#b9daf5 0%,#d8eafa 55%,#f2f8fd 100%)}
+.cloud{position:absolute;border-radius:50%;pointer-events:none;filter:blur(10px);background:radial-gradient(ellipse at center,rgba(255,255,255,.96) 0%,rgba(255,255,255,.55) 35%,rgba(255,255,255,0) 70%)}
+.btn{display:inline-block;padding:18px 36px;border-radius:999px;color:#ffffff;font-weight:600;font-size:18px;text-decoration:none;letter-spacing:.01em}
+.btn:hover{filter:brightness(1.25)}
+.btn-small{display:inline-block;padding:14px 22px;border-radius:999px;font-weight:600;font-size:15px;text-decoration:none}
+.btn-small:hover{filter:brightness(1.25)}
+.beta-form{position:relative;display:flex;align-items:center;gap:8px;width:min(560px,100%);box-sizing:border-box;padding:8px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.2) 100%);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(18px) saturate(1.7);-webkit-backdrop-filter:blur(18px) saturate(1.7);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.28),0 10px 34px rgba(23,32,61,.14)}
+.beta-form:focus-within{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.28),0 10px 34px rgba(23,32,61,.14),0 0 0 3px rgba(23,32,61,.18)}
+.beta-form input{flex:1;min-width:0;border:0;background:transparent;padding:0 20px;font:inherit;font-size:18px;color:#17203d;outline:0}
+.beta-form[hidden],.beta-done[hidden]{display:none}
+.beta-done{width:min(560px,100%);box-sizing:border-box;padding:28px 28px 30px;border-radius:32px;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.2) 100%);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(18px) saturate(1.7);-webkit-backdrop-filter:blur(18px) saturate(1.7);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),inset 0 0 22px rgba(255,255,255,.28),0 10px 34px rgba(23,32,61,.14);outline:0;animation:heroin .7s cubic-bezier(.215,.61,.355,1) both}
+.beta-form input::placeholder{color:#4a5572}
+.beta-form button{flex:none;border:0;border-radius:999px;padding:16px 28px;font:inherit;font-size:17px;font-weight:600;color:#fff;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 4px 14px rgba(23,32,61,.25)}
+.beta-form button:hover{filter:brightness(1.25)}
+.beta-form button:focus-visible{outline:2px solid #17203d;outline-offset:2px}
+.feat{display:flex;flex-wrap:wrap;gap:72px;align-items:center;justify-content:center;max-width:1160px;margin:0 auto;padding:0 40px;box-sizing:border-box}
+.feat-text{flex:1 1 420px;min-width:0;max-width:520px}
+.feat-media{flex:1 1 340px;display:flex;justify-content:center;min-width:0}
+.kicker{margin:0 0 14px;font-size:21px;font-weight:600;line-height:1.2;letter-spacing:0;color:#5f6580}
+.soon{display:inline-block;margin-left:10px;padding:5px 12px;border-radius:999px;background:#fff3d1;color:#6b4a00;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle}
+.wordmark{flex-basis:100%;display:block;width:100%;height:auto;margin:56px 0 4px;overflow:visible;-webkit-mask-image:linear-gradient(180deg,#000 35%,rgba(0,0,0,.25) 100%);mask-image:linear-gradient(180deg,#000 35%,rgba(0,0,0,.25) 100%)}
+.wordmark path{fill:none;stroke:#17203d;stroke-opacity:.6;stroke-width:1.5px;vector-effect:non-scaling-stroke}
+.eyebrow{margin:0 0 18px;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#8f6200}
+.rot{position:relative;display:inline-block;min-width:260px;height:1.5em}
+.rot-i{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;animation:rotfade 12s infinite}
+@keyframes rotfade{0%{opacity:0;transform:translateY(8px)}4%,22%{opacity:1;transform:none}26%,100%{opacity:0;transform:translateY(-8px)}}
+@keyframes drift{from{transform:translateX(-30px)}to{transform:translateX(60px)}}
+@keyframes heroin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+.h-in{animation:heroin 1s cubic-bezier(.215,.61,.355,1) both}
+@supports (animation-timeline: view()){.reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 5% entry 55%}}
+@media (min-width:900px){.flip .feat-media{order:-1}}
+@media (prefers-reduced-motion:reduce){.reveal,.h-in,.cloud{animation:none!important}.rot-i{animation:none}.rot-i:first-child{opacity:1}}
+
+.pin-track{padding:170px 40px;box-sizing:border-box}
+@keyframes lit{from{opacity:.16}to{opacity:1}}
+@supports (animation-timeline: view()){
+.pin-track{padding:0;min-height:1600px;view-timeline:--q block}
+.pin-stick{position:sticky;top:0;height:760px;height:min(760px,100svh);display:flex;align-items:center;justify-content:center}
+.word{animation-name:lit;animation-timing-function:linear;animation-fill-mode:both;animation-timeline:--q;animation-duration:1ms}
+}
+@media (prefers-reduced-motion:reduce){
+.pin-track{min-height:0!important;padding:170px 40px!important}
+.pin-stick{position:static!important;height:auto!important}
+.word{animation:none!important;opacity:1!important}
+}
+@media (max-width:600px){
+.sky:not(.closing){min-height:min(100svh,880px)!important}
+.nav{padding:20px 20px!important}
+.beta-form input{font-size:16px;padding:0 14px}.beta-form button{padding:14px 20px;font-size:16px}
+.sky img[width="112"]{width:88px!important;height:88px!important;margin-bottom:18px!important}
+.fs{--ph:clamp(180px,calc((min(100svh,880px) - 290px) * 0.82),400px);height:min(100svh,880px);box-sizing:border-box;padding:12px 16px!important;background:#f6f4ee}
+.fs .feat{position:relative;height:100%;box-sizing:border-box;max-width:none;flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:space-between;gap:10px;padding:32px 24px 16px;background:#ffffff;border-radius:36px;overflow:hidden}
+.fs .feat-text{flex:0 0 auto;max-width:none;text-align:left}
+.fs .feat-media{flex:1 1 0;min-height:0;width:100%;align-items:center}
+.fs .feat img{flex:none;max-width:none!important;object-fit:contain}
+.fs h2{font-size:32px!important;line-height:1.1!important;letter-spacing:-.01em}
+.fs .eyebrow{font-size:12px;margin:0 0 8px}
+.fs .kicker{font-size:18px;line-height:1.2;margin:0 0 10px}
+.wordmark{margin-top:40px}.wordmark path{stroke-width:1px}
+.fs .feat-text p:not(.eyebrow):not(.rotline):not(.sub):not(.kicker){font-size:15px!important;line-height:1.45!important;margin:10px 0 0!important}
+.fs .feat-text .body{display:none}
+.fs .sub{font-size:18px!important;margin:8px 0 0!important}
+.fs .feat-text ul{display:none}
+.rotline{justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:2px!important;font-size:17px!important;line-height:1.35;margin-top:18px!important}
+.rotline>span:first-child{color:#5f6580}
+.rot{min-width:0;width:100%}
+.rot-i{left:0;right:0;text-align:left}
+.im-notif{height:calc(var(--ph) / 0.82)!important;width:auto!important}
+.im-music{height:calc(var(--ph) / 0.972)!important;width:auto!important}
+.im-bible{height:calc(var(--ph) / 0.965)!important;width:auto!important}
+.im-widget{height:calc(var(--ph) / 0.96)!important;width:auto!important}
+.im-friend{height:var(--ph)!important;width:auto!important;max-width:none!important}
+.ph{height:var(--ph)!important;width:auto!important;aspect-ratio:9/18;max-width:none!important}
+.bridge{padding:100px 24px!important}
+.closing{padding:110px 24px 40px!important}
+.pin-stick figure{padding:0 24px!important}
+}
+</style>
+
+<style>
+.honeypot{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}
+.signup{display:flex;flex-direction:column;align-items:center;width:100%}
+.form-error{margin:12px 0 0;text-align:center;font-size:14px;color:#8a1c1c}
+.form-error[hidden]{display:none}
+.beta-form button[disabled]{opacity:.7;cursor:progress}
+</style>
+<script src="assets/config.js" defer></script>
+<script src="assets/signup.js" defer></script>
+</head>
+<body>
+<div>
+
+<section class="sky" style="min-height:800px;display:flex;flex-direction:column">
+<div class="cloud" style="width:820px;height:300px;left:-160px;top:130px;animation:drift 70s ease-in-out infinite alternate"></div>
+<div class="cloud" style="width:700px;height:240px;right:-120px;top:70px;animation:drift 90s ease-in-out infinite alternate-reverse"></div>
+<div class="cloud" style="width:900px;height:320px;left:30%;bottom:-90px;animation:drift 80s ease-in-out infinite alternate"></div>
+<nav class="nav" style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:28px 48px">
+<span class="serif" style="font-size:26px;font-weight:600;color:#17203d">Holystening</span>
+</nav>
+<div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 40px 140px;box-sizing:border-box">
+<img class="h-in" src="images/app-icon.webp" alt="Holystening app icon, a glowing white dove" width="112" height="112" style="animation-delay:.3s;width:120px;height:120px;border-radius:22.4%;display:block;margin:0 0 30px;box-shadow:0 14px 36px rgba(23,32,61,.25)">
+<h1 class="serif h-in" style="animation-delay:.42s;margin:0;font-size:clamp(42px,6.8vw,81px);line-height:1.08;letter-spacing:0;font-weight:500;font-variation-settings:'opsz' 14;color:#17203d;max-width:980px">Your prayer habit, made easy.</h1>
+<p class="h-in" style="animation-delay: .54s; margin: 30px 0 0; max-width: 640px; font-size: clamp(18px,2vw,23px); line-height: 1.5; color: #2a3354; width: 100%; box-sizing: border-box; padding: 0 4px; text-align: center">Holystening is the distraction-free prayer app. <br>Get into your closet and pray anywhere, in this distracted world.</p>
+<div class="signup" data-signup>
+<form class="beta-form h-in" style="animation-delay:.66s;margin-top:44px" novalidate>
+<input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="Your email" required>
+<input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button type="submit" style="background:#17203d">Join the beta</button>
+</form>
+<p class="form-error" role="alert" hidden></p>
+<div class="beta-done" role="status" hidden style="margin-top:44px">
+<p class="serif" style="margin:0;font-size:26px;line-height:1.2;color:#17203d">Check your inbox.</p>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:#2a3354"><span data-done-message>We sent the beta link to</span> <strong style="font-weight:600" data-email></strong>.</p>
+<a class="btn" href="https://testflight.apple.com/join/Twr2a1ha" target="_blank" rel="noopener" style="background:#17203d;margin-top:20px;padding:14px 28px;font-size:16px">Open the beta link</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="pin-track" style="background:#f6f4ee;text-align:center">
+<div class="pin-stick">
+<figure style="margin:0 auto;max-width:860px;padding:0 40px;box-sizing:border-box">
+<blockquote class="serif" style="margin:0;font-size:clamp(24px,3.1vw,37px);line-height:1.36;color:#17203d"><span class="word" style="animation-range: cover 38.00% cover 39.80%;">“But</span> <span class="word" style="animation-range: cover 38.59% cover 40.39%;">you,</span> <span class="word" style="animation-range: cover 39.19% cover 40.99%;">when</span> <span class="word" style="animation-range: cover 39.78% cover 41.58%;">you</span> <span class="word" style="animation-range: cover 40.38% cover 42.18%;">pray,</span> <span class="word" style="animation-range: cover 40.97% cover 42.77%; color: #A87500;">go</span> <span class="word" style="animation-range: cover 41.57% cover 43.37%; color: #A87500;">into</span> <span class="word" style="animation-range: cover 42.16% cover 43.96%; color: #A87500;">your</span> <span class="word" style="animation-range: cover 42.76% cover 44.56%; color: #A87500;">room,</span> <span class="word" style="animation-range: cover 43.35% cover 45.15%;">and</span> <span class="word" style="animation-range: cover 43.94% cover 45.74%;">when</span> <span class="word" style="animation-range: cover 44.54% cover 46.34%;">you</span> <span class="word" style="animation-range: cover 45.13% cover 46.93%;">have</span> <span class="word" style="animation-range: cover 45.73% cover 47.53%;">shut</span> <span class="word" style="animation-range: cover 46.32% cover 48.12%;">your</span> <span class="word" style="animation-range: cover 46.92% cover 48.72%;">door,</span> <span class="word" style="animation-range: cover 47.51% cover 49.31%;">pray</span> <span class="word" style="animation-range: cover 48.11% cover 49.91%;">to</span> <span class="word" style="animation-range: cover 48.70% cover 50.50%;">your</span> <span class="word" style="animation-range: cover 49.29% cover 51.09%;">Father</span> <span class="word" style="animation-range: cover 49.89% cover 51.69%;">who</span> <span class="word" style="animation-range: cover 50.48% cover 52.28%;">is</span> <span class="word" style="animation-range: cover 51.08% cover 52.88%;">in</span> <span class="word" style="animation-range: cover 51.67% cover 53.47%;">the</span> <span class="word" style="animation-range: cover 52.27% cover 54.07%;">secret</span> <span class="word" style="animation-range: cover 52.86% cover 54.66%;">place;</span> <span class="word" style="animation-range: cover 53.46% cover 55.26%;">and</span> <span class="word" style="animation-range: cover 54.05% cover 55.85%;">your</span> <span class="word" style="animation-range: cover 54.64% cover 56.44%;">Father</span> <span class="word" style="animation-range: cover 55.24% cover 57.04%;">who</span> <span class="word" style="animation-range: cover 55.83% cover 57.63%;">sees</span> <span class="word" style="animation-range: cover 56.43% cover 58.23%;">in</span> <span class="word" style="animation-range: cover 57.02% cover 58.82%;">secret</span> <span class="word" style="animation-range: cover 57.62% cover 59.42%;">will</span> <span class="word" style="animation-range: cover 58.21% cover 60.01%;">reward</span> <span class="word" style="animation-range: cover 58.81% cover 60.61%;">you</span> <span class="word" style="animation-range: cover 59.40% cover 61.20%;">openly.”</span></blockquote>
+<div class="word" style="animation-range: cover 60.50% cover 62.00%;width:48px;height:2px;background:#A87500;margin:44px auto 20px"></div>
+<figcaption class="word" style="animation-range: cover 61.00% cover 63.00%;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#555c74">Jesus · Matthew 6:6</figcaption>
+</figure>
+</div>
+</section>
+
+<section class="flip fs" style="padding:120px 0">
+<div class="feat">
+<div class="feat-text reveal">
+<p class="kicker">Focus</p>
+<h2 class="serif" style="margin:0;font-size:clamp(30px,3.7vw,48px);line-height:1.1;font-weight:400;color:#17203d"><span style="color:#A87500">Block</span> all distractions while <span style="color:#A87500">praying</span>.</h2>
+<p class="body" style="margin:26px 0 0;font-size:20px;line-height:1.6;color:#475069">Holystening turns on your iPhone Focus when prayer starts and turns it off when the session ends. Your screen stays on and dims on its own, so nothing pulls you away.</p>
+<p class="serif rotline" style="margin:34px 0 0;font-size:24px;color:#17203d;display:flex;flex-wrap:wrap;gap:8px"><span>Get in your closet</span><span class="rot"><span class="rot-i" style="color:#A87500;animation-delay:0s">on the bus. 🚌</span><span class="rot-i" style="color:#A87500;animation-delay:3s">at school. 🏫</span><span class="rot-i" style="color:#A87500;animation-delay:6s">in your car. 🚗</span><span class="rot-i" style="color:#A87500;animation-delay:9s">early in the morning. 🌅</span></span></p>
+</div>
+<div class="feat-media reveal">
+<img class="im-notif" src="images/focus-block-apps.webp" alt="Holystening prayer screen with social media app icons kept away from the phone" style="width:100%;max-width:500px;height:auto;mix-blend-mode:multiply">
+</div>
+</div>
+</section>
+
+<section class="fs" style="padding:120px 0">
+<div class="feat">
+<div class="feat-text reveal">
+<p class="kicker">Music</p>
+<h2 class="serif" style="margin:0;font-size:clamp(30px,3.7vw,48px);line-height:1.1;font-weight:400;color:#17203d">Pray with smooth <span style="color:#A87500">background instrumental</span> to focus on Jesus.</h2>
+<p class="body" style="margin:26px 0 0;font-size:20px;line-height:1.6;color:#475069">One tap starts your session. Choose how long you want to pray, and the music fades out gently when you finish.</p>
+</div>
+<div class="feat-media reveal">
+<img class="im-music" src="images/music.webp" alt="Holystening prayer screen with a play button and music notes beside the phone" style="width:100%;max-width:502px;height:auto;mix-blend-mode:multiply">
+</div>
+</div>
+</section>
+
+<section class="flip fs" style="padding:120px 0">
+<div class="feat">
+<div class="feat-text reveal">
+<p class="kicker">Bible</p>
+<h2 class="serif" style="margin:0;font-size:clamp(30px,3.7vw,48px);line-height:1.1;font-weight:400;color:#17203d">Access the <span style="color:#A87500">Bible</span> in the app while you pray.</h2>
+<p class="body" style="margin:26px 0 0;font-size:20px;line-height:1.6;color:#475069">The full King James Bible opens over your session without stopping it.</p>
+</div>
+<div class="feat-media reveal">
+<img class="im-bible" src="images/bible.webp" alt="Genesis chapter 1 open in the Holystening Bible reader" style="width:100%;max-width:322px;height:auto;mix-blend-mode:multiply">
+</div>
+</div>
+</section>
+
+<section class="fs" style="padding:120px 0">
+<div class="feat">
+<div class="feat-text reveal">
+<p class="kicker">Widget</p>
+<h2 class="serif" style="margin:0;font-size:clamp(30px,3.7vw,48px);line-height:1.1;font-weight:400;color:#17203d">Prayer, <span style="color:#A87500">one tap</span> from home.</h2>
+<p class="serif sub" style="margin:18px 0 0;font-size:26px;color:#5b6178">Add the Holystening widget.</p>
+</div>
+<div class="feat-media reveal">
+<img class="im-widget" src="images/widget.webp" alt="iPhone home screen with the Holystening app icon highlighted" style="width:100%;max-width:327px;height:auto;mix-blend-mode:multiply">
+</div>
+</div>
+</section>
+
+
+
+<section class="pin-track" style="background:#f6f4ee;text-align:center">
+<div class="pin-stick">
+<figure style="margin:0 auto;max-width:860px;padding:0 40px;box-sizing:border-box">
+<blockquote class="serif" style="margin:0;font-size:clamp(24px,3.1vw,37px);line-height:1.36;color:#17203d"><span class="word" style="animation-range: cover 38.00% cover 39.80%;">“Two</span> <span class="word" style="animation-range: cover 38.52% cover 40.32%;">are</span> <span class="word" style="animation-range: cover 39.04% cover 40.84%;">better</span> <span class="word" style="animation-range: cover 39.57% cover 41.37%;">than</span> <span class="word" style="animation-range: cover 40.09% cover 41.89%;">one,</span> <span class="word" style="animation-range: cover 40.61% cover 42.41%;">because</span> <span class="word" style="animation-range: cover 41.13% cover 42.93%;">they</span> <span class="word" style="animation-range: cover 41.65% cover 43.45%;">have</span> <span class="word" style="animation-range: cover 42.18% cover 43.98%;">a</span> <span class="word" style="animation-range: cover 42.70% cover 44.50%;">good</span> <span class="word" style="animation-range: cover 43.22% cover 45.02%;">reward</span> <span class="word" style="animation-range: cover 43.74% cover 45.54%;">for</span> <span class="word" style="animation-range: cover 44.26% cover 46.06%;">their</span> <span class="word" style="animation-range: cover 44.79% cover 46.59%;">toil.</span> <span class="word" style="animation-range: cover 45.31% cover 47.11%;">For</span> <span class="word" style="animation-range: cover 45.83% cover 47.63%;">if</span> <span class="word" style="animation-range: cover 46.35% cover 48.15%;">they</span> <span class="word" style="animation-range: cover 46.87% cover 48.67%;">fall,</span> <span class="word" style="animation-range: cover 47.40% cover 49.20%; color: #A87500;">one</span> <span class="word" style="animation-range: cover 47.92% cover 49.72%; color: #A87500;">will</span> <span class="word" style="animation-range: cover 48.44% cover 50.24%; color: #A87500;">lift</span> <span class="word" style="animation-range: cover 48.96% cover 50.76%; color: #A87500;">up</span> <span class="word" style="animation-range: cover 49.48% cover 51.28%; color: #A87500;">his</span> <span class="word" style="animation-range: cover 50.00% cover 51.80%; color: #A87500;">fellow.</span> <span class="word" style="animation-range: cover 50.53% cover 52.33%;">But</span> <span class="word" style="animation-range: cover 51.05% cover 52.85%;">woe</span> <span class="word" style="animation-range: cover 51.57% cover 53.37%;">to</span> <span class="word" style="animation-range: cover 52.09% cover 53.89%;">him</span> <span class="word" style="animation-range: cover 52.61% cover 54.41%;">who</span> <span class="word" style="animation-range: cover 53.14% cover 54.94%;">is</span> <span class="word" style="animation-range: cover 53.66% cover 55.46%;">alone</span> <span class="word" style="animation-range: cover 54.18% cover 55.98%;">when</span> <span class="word" style="animation-range: cover 54.70% cover 56.50%;">he</span> <span class="word" style="animation-range: cover 55.22% cover 57.02%;">falls</span> <span class="word" style="animation-range: cover 55.75% cover 57.55%;">and</span> <span class="word" style="animation-range: cover 56.27% cover 58.07%;">has</span> <span class="word" style="animation-range: cover 56.79% cover 58.59%;">not</span> <span class="word" style="animation-range: cover 57.31% cover 59.11%;">another</span> <span class="word" style="animation-range: cover 57.83% cover 59.63%;">to</span> <span class="word" style="animation-range: cover 58.36% cover 60.16%;">lift</span> <span class="word" style="animation-range: cover 58.88% cover 60.68%;">him</span> <span class="word" style="animation-range: cover 59.40% cover 61.20%;">up!”</span></blockquote>
+<div class="word" style="animation-range: cover 60.50% cover 62.00%;width:48px;height:2px;background:#A87500;margin:44px auto 20px"></div>
+<figcaption class="word" style="animation-range: cover 61.00% cover 63.00%;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#555c74">Ecclesiastes 4:9-10</figcaption>
+</figure>
+</div>
+</section>
+
+<section class="flip fs" style="padding:120px 0">
+<div class="feat">
+<div class="feat-text reveal">
+<p class="kicker"><span class="soon" style="margin-left:0">Coming soon</span></p>
+<h2 class="serif" style="margin:0;font-size:clamp(30px,3.7vw,48px);line-height:1.1;font-weight:400;color:#17203d">Have a friend in the spirit <span style="color:#A87500">lift you up</span>.</h2>
+<p style="margin:26px 0 0;font-size:20px;line-height:1.6;color:#475069">When you miss your prayer days or feel tempted, you have a private place to call or message a friend you chose. They know it is coming from you.</p>
+<ul style="margin:28px 0 0;padding:0 0 0 22px;font-size:18px;line-height:1.7;color:#475069">
+<li>You choose the friend, and both of you agree.</li>
+<li>After more than three missed days in a row, your friend gets a prompt to check on you.</li>
+<li>Call or message them directly, any time.</li>
+</ul>
+</div>
+<div class="feat-media reveal">
+<img class="im-friend" src="images/partner-lock-screen.webp" alt="iPhone lock screen with a Holystening notification: Lift Daniel up. Daniel&#8217;s prayer streak paused for a while. He could use some encouragement today." width="438" height="910" style="width:100%;max-width:320px;height:auto">
+</div>
+</div>
+</section>
+
+<section id="download" class="sky closing" style="padding:170px 40px 56px;text-align:center">
+<div class="cloud" style="width:820px;height:300px;left:-160px;top:40px;animation:drift 80s ease-in-out infinite alternate"></div>
+<div class="cloud" style="width:760px;height:260px;right:-140px;top:150px;animation:drift 95s ease-in-out infinite alternate-reverse"></div>
+<div style="position:relative;z-index:2">
+<img class="reveal" src="images/app-icon.webp" alt="" width="84" height="84" style="width:84px;height:84px;border-radius:22.5%;display:block;margin:0 auto 28px;box-shadow:0 14px 40px rgba(23,32,61,.25)">
+<p class="serif reveal" style="margin:0 0 30px;font-size:22px;color:#34405f">Pray without ceasing. <span style="display:block;margin-top:12px;font-style:normal;font-size:14px;letter-spacing:.06em">1 Thessalonians 5:17</span></p>
+<h2 class="serif reveal" style="margin:0;font-size:clamp(37px,5.5vw,66px);line-height:1.05;font-weight:400;color:#17203d">Holystening is free.</h2>
+<p class="serif reveal" style="margin:14px 0 0;font-size:14px;color:#34405f">Freely you have received, freely give. <span style="font-style:normal;font-size:12px;letter-spacing:.06em">Matthew 10:8</span></p>
+<div class="signup" data-signup>
+<form class="beta-form reveal" style="margin:44px auto 0" novalidate>
+<input type="email" name="email" placeholder="Your email" autocomplete="email" aria-label="Your email" required>
+<input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button type="submit" style="background:#17203d">Join the beta</button>
+</form>
+<p class="form-error" role="alert" hidden></p>
+<div class="beta-done" role="status" hidden style="margin:44px auto 0">
+<p class="serif" style="margin:0;font-size:26px;line-height:1.2;color:#17203d">Check your inbox.</p>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:#2a3354"><span data-done-message>We sent the beta link to</span> <strong style="font-weight:600" data-email></strong>.</p>
+<a class="btn" href="https://testflight.apple.com/join/Twr2a1ha" target="_blank" rel="noopener" style="background:#17203d;margin-top:20px;padding:14px 28px;font-size:16px">Open the beta link</a>
+</div>
+</div>
+<footer style="margin:130px auto 0;max-width:1160px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between;padding-top:28px;border-top:1px solid rgba(23,32,61,.2);text-align:left;font-size:14px;color:#2a3354">
+<span>Built by <a href="https://www.linkedin.com/in/guyadou" target="_blank" rel="noopener" style="font-weight:500;text-decoration:none">Guy-Georges Adou Bogolo</a></span>
+<span style="flex-basis:100%;font-size:12px;line-height:1.5;color:#3d4766">Scripture taken from the New King James Version®. Copyright © 1982 by Thomas Nelson. Used by permission. All rights reserved.</span>
+<svg class="wordmark" viewBox="74 -731 5599 917" aria-hidden="true" focusable="false"><path d="M518 0V-290H191V0H82V-660H191V-382H518V-660H627V0ZM1010 13Q935 13 877.0 -19.0Q819 -51 786.5 -112.0Q754 -173 754 -262Q754 -353 788.0 -413.0Q822 -473 879.5 -503.0Q937 -533 1009 -533Q1083 -533 1141.0 -502.0Q1199 -471 1232.5 -410.0Q1266 -349 1266 -258Q1266 -168 1232.5 -107.5Q1199 -47 1141.0 -17.0Q1083 13 1010 13ZM1014 -73Q1059 -73 1091.0 -94.0Q1123 -115 1140.0 -156.0Q1157 -197 1157 -254Q1157 -313 1139.0 -355.5Q1121 -398 1087.5 -421.0Q1054 -444 1006 -444Q963 -444 930.5 -423.5Q898 -403 881.0 -362.5Q864 -322 864 -264Q864 -173 904.0 -123.0Q944 -73 1014 -73ZM1387 0V-705H1494V0ZM1828 176Q1788 176 1747.5 167.5Q1707 159 1673.0 141.5Q1639 124 1616 96L1660 10Q1686 44 1730.0 61.5Q1774 79 1823 79Q1879 79 1915.5 55.5Q1952 32 1971.0 -17.0Q1990 -66 1991 -140L2000 -240H1981Q1970 -169 1946.5 -126.0Q1923 -83 1889.0 -64.0Q1855 -45 1809 -45Q1752 -45 1713.5 -73.5Q1675 -102 1655.5 -158.5Q1636 -215 1636 -297V-520H1744V-321Q1744 -226 1769.5 -182.0Q1795 -138 1846 -138Q1874 -138 1896.0 -152.0Q1918 -166 1934.5 -193.5Q1951 -221 1960.5 -262.0Q1970 -303 1972 -357V-520H2081V-135Q2081 -73 2071.0 -23.5Q2061 26 2040.5 63.5Q2020 101 1990.0 126.5Q1960 152 1919.5 164.0Q1879 176 1828 176ZM2428 13Q2374 13 2332.0 2.0Q2290 -9 2260.5 -29.5Q2231 -50 2215.0 -79.0Q2199 -108 2196 -142L2284 -171Q2284 -142 2302.0 -119.0Q2320 -96 2353.5 -83.5Q2387 -71 2434 -71Q2489 -71 2519.0 -89.0Q2549 -107 2549 -139Q2549 -163 2532.5 -177.0Q2516 -191 2485.5 -200.0Q2455 -209 2414 -217Q2377 -225 2340.5 -235.5Q2304 -246 2273.5 -263.0Q2243 -280 2224.5 -307.5Q2206 -335 2206 -377Q2206 -425 2231.0 -459.5Q2256 -494 2303.5 -513.5Q2351 -533 2417 -533Q2481 -533 2527.5 -514.0Q2574 -495 2602.0 -461.0Q2630 -427 2636 -381L2544 -354Q2542 -385 2525.5 -406.0Q2509 -427 2481.0 -437.5Q2453 -448 2415 -448Q2365 -448 2336.5 -430.0Q2308 -412 2308 -381Q2308 -357 2325.5 -342.5Q2343 -328 2373.5 -319.5Q2404 -311 2443 -303Q2483 -295 2520.0 -285.0Q2557 -275 2586.5 -258.5Q2616 -242 2633.5 -214.5Q2651 -187 2651 -145Q2651 -94 2623.5 -58.5Q2596 -23 2546.0 -5.0Q2496 13 2428 13ZM2937 11Q2860 11 2822.5 -31.0Q2785 -73 2785 -160V-431H2708L2710 -520H2760Q2786 -520 2799.0 -528.5Q2812 -537 2815 -559L2825 -636H2890V-520H3033V-429H2890V-163Q2890 -124 2908.0 -107.0Q2926 -90 2961 -90Q2980 -90 2999.5 -94.5Q3019 -99 3037 -112V-7Q3007 3 2982.0 7.0Q2957 11 2937 11ZM3369 13Q3307 13 3259.0 -5.5Q3211 -24 3178.0 -58.5Q3145 -93 3128.0 -141.5Q3111 -190 3111.0 -251.0Q3111 -312 3128.0 -363.5Q3145 -415 3176.5 -453.0Q3208 -491 3254.5 -512.0Q3301 -533 3360 -533Q3415 -533 3458.5 -515.0Q3502 -497 3532.0 -460.5Q3562 -424 3577.0 -369.5Q3592 -315 3588 -242L3216 -239Q3219 -159 3256 -118Q3296 -72 3370 -72Q3401 -72 3423.0 -79.5Q3445 -87 3460.0 -99.5Q3475 -112 3484.5 -129.5Q3494 -147 3500 -166L3595 -144Q3586 -107 3567.5 -78.5Q3549 -50 3521.0 -29.5Q3493 -9 3455.5 2.0Q3418 13 3369 13ZM3220 -307 3487 -310Q3486 -342 3476 -367Q3460 -406 3430.0 -425.0Q3400 -444 3361 -444Q3317 -444 3284.5 -421.5Q3252 -399 3234 -356Q3225 -334 3220 -307ZM3710 0V-520H3804L3798 -358H3815Q3829 -418 3852.5 -456.5Q3876 -495 3912.5 -514.0Q3949 -533 3998 -533Q4085 -533 4130.5 -471.0Q4176 -409 4176 -282V0H4066V-271Q4066 -358 4040.0 -398.5Q4014 -439 3962 -439Q3917 -439 3885.5 -410.5Q3854 -382 3837.0 -336.0Q3820 -290 3818 -236V0ZM4318 0V-520H4426V0ZM4372 -607Q4337 -607 4319.0 -621.5Q4301 -636 4301 -665Q4301 -693 4319.0 -708.0Q4337 -723 4372 -723Q4408 -723 4426.0 -708.0Q4444 -693 4444 -665Q4444 -636 4426.0 -621.5Q4408 -607 4372 -607ZM4577 0V-520H4671L4665 -358H4682Q4696 -418 4719.5 -456.5Q4743 -495 4779.5 -514.0Q4816 -533 4865 -533Q4952 -533 4997.5 -471.0Q5043 -409 5043 -282V0H4933V-271Q4933 -358 4907.0 -398.5Q4881 -439 4829 -439Q4784 -439 4752.5 -410.5Q4721 -382 4704.0 -336.0Q4687 -290 4685 -236V0ZM5383 178Q5299 178 5245.5 165.0Q5192 152 5167.0 126.0Q5142 100 5142 62Q5142 16 5178.0 -13.5Q5214 -43 5287 -51V-71Q5233 -70 5205.5 -82.5Q5178 -95 5178 -122Q5178 -150 5205.5 -169.5Q5233 -189 5295 -204V-223Q5234 -225 5201.0 -261.0Q5168 -297 5168 -353Q5168 -404 5195.5 -442.5Q5223 -481 5276.5 -502.5Q5330 -524 5406 -524H5657V-436L5496 -460V-440Q5556 -429 5586.0 -402.0Q5616 -375 5616 -329Q5616 -288 5590.5 -256.0Q5565 -224 5516.0 -206.5Q5467 -189 5396 -189Q5383 -189 5368.0 -190.0Q5353 -191 5324 -195Q5300 -180 5285.5 -167.0Q5271 -154 5271 -144Q5271 -134 5283.5 -128.0Q5296 -122 5315.0 -120.0Q5334 -118 5351 -118H5479Q5499 -118 5530.0 -114.5Q5561 -111 5592.0 -98.0Q5623 -85 5644.0 -57.5Q5665 -30 5665 19Q5665 75 5633.0 110.0Q5601 145 5538.0 161.5Q5475 178 5383 178ZM5390 89Q5454 89 5493.0 81.5Q5532 74 5550.0 57.0Q5568 40 5568 14Q5568 -10 5556.0 -23.5Q5544 -37 5526.5 -42.5Q5509 -48 5491.0 -49.0Q5473 -50 5460 -50H5341Q5288 -41 5267.0 -19.5Q5246 2 5246 28Q5246 53 5264.0 66.5Q5282 80 5314.5 84.5Q5347 89 5390 89ZM5397 -253Q5455 -253 5484.5 -278.5Q5514 -304 5514 -346Q5514 -391 5484.0 -419.5Q5454 -448 5395 -448Q5337 -448 5306.5 -420.0Q5276 -392 5276 -349Q5276 -320 5290.0 -298.5Q5304 -277 5330.5 -265.0Q5357 -253 5397 -253Z"></path></svg>
+<span style="display:flex;gap:24px"><span class="serif" style="font-weight:600;font-size:16px">Holystening</span><a href="privacy.html">Privacy</a></span>
+</footer>
+</div>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+/* Self-hosted fonts (from Fontsource, SIL Open Font License 1.1) */
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-display:swap;font-weight:200 800;src:url(../fonts/bricolage-grotesque.woff2) format('woff2-variations'),url(../fonts/bricolage-grotesque.woff2) format('woff2')}
+@font-face{font-family:'Instrument Sans';font-style:normal;font-display:swap;font-weight:400;src:url(../fonts/instrument-sans-400.woff2) format('woff2')}
+@font-face{font-family:'Instrument Sans';font-style:normal;font-display:swap;font-weight:500;src:url(../fonts/instrument-sans-500.woff2) format('woff2')}
+@font-face{font-family:'Instrument Sans';font-style:normal;font-display:swap;font-weight:600;src:url(../fonts/instrument-sans-600.woff2) format('woff2')}
