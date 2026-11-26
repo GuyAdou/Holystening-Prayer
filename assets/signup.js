@@ -23,7 +23,19 @@
       method: 'POST',
       body: new URLSearchParams({ email: email, website: honeypotValue }),
     });
-    return response.json();
+    return parseSignupReply(await response.text());
+  }
+
+  // Accepts both script versions: JSON ({"ok":true}) or plain text ("ok" / "invalid").
+  function parseSignupReply(replyText) {
+    try {
+      return JSON.parse(replyText);
+    } catch (notJson) {
+      const plainReply = replyText.trim().toLowerCase();
+      if (plainReply === 'ok') return { ok: true };
+      if (plainReply === 'invalid') return { ok: false, error: 'invalid_email' };
+      return { ok: false, error: 'unexpected_reply' };
+    }
   }
 
   function showError(signupBlock, message) {
