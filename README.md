@@ -4,10 +4,12 @@ Landing page for Holystening, the distraction-free prayer app. Plain HTML, CSS a
 
 ## Files
 
+The privacy policy lives on Notion: https://guygeorges.notion.site/Holystening-Privacy-Policy-3c14ecc10ee981c7a55bee150ddbb8ea (the footer's Privacy link).
+
+
 | Path | What it is |
 |---|---|
 | `index.html` | The landing page |
-| `privacy.html` | Privacy policy for the app |
 | `assets/config.js` | Site settings: the beta signup endpoint |
 | `assets/signup.js` | Beta signup form logic |
 | `assets/fonts.css`, `fonts/` | Self-hosted Bricolage Grotesque and Instrument Sans (SIL Open Font License) |
